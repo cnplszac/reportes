@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Reportes Principal</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(to right bottom, #e0e7ed, #c9d2da); /* Soft gradient background for the main page */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 2rem;
+            color: #334155; /* Default text color */
+        }
+        .main-container {
+            background-color: #f8fafc; /* Lighter background for the main card */
+            padding: 2.5rem; /* Increased padding */
+            border-radius: 1.5rem;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1), 0 5px 15px rgba(0, 0, 0, 0.05); /* Deeper shadow */
+            width: 100%;
+            max-width: 750px; /* Wider main container */
+            border: 1px solid #e2e8f0;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+        .header h1 {
+            font-size: 3rem; /* Larger main title */
+            font-weight: 800;
+            color: #1a202c;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.08);
+            margin-bottom: 0.75rem;
+        }
+        .header p {
+            font-size: 1.1rem;
+            color: #4a5568;
+        }
+
+        /* --- Styles for the Cleaning Report Form (Adjusted for single form) --- */
+        .cleaning-report-section h1 { /* Adjusted title for embedded form */
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 2rem;
+            text-shadow: none; /* Remove text shadow for sub-heading */
+        }
+        h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-top: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 1rem;
+        }
+        .input-group label {
+            font-weight: 600;
+            margin-bottom: 0.6rem;
+            display: block;
+            color: #4a5568;
+            font-size: 0.95rem;
+        }
+        .input-group input, .input-group select, .input-group textarea {
+            width: 100%;
+            padding: 0.9rem;
+            border: 1px solid #cbd5e0;
+            border-radius: 0.75rem;
+            font-size: 1.05rem;
+            color: #2d3748;
+            transition: all 0.2s ease-in-out;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        .input-group input:focus, .input-group select:focus, .input-group textarea:focus {
+            outline: none;
+            border-color: #4299e1;
+            box-shadow: 0 0 0 4px rgba(66, 153, 225, 0.3), inset 0 1px 3px rgba(0, 0, 0, 0.08);
+            background-color: #f7fafc;
+        }
+        .btn {
+            padding: 0.9rem 2rem;
+            border-radius: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            letter-spacing: 0.025em;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .btn-primary {
+            background: linear-gradient(to right, #4299e1, #2b6cb0);
+            color: white;
+            border: none;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(to right, #2b6cb0, #3182ce);
+            box-shadow: 0 6px 15px rgba(43, 108, 176, 0.4);
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background-color: #6b7280;
+            color: white;
+            border: none;
+        }
+        .btn-secondary:hover {
+            background-color: #4b5563;
+            box-shadow: 0 6px 15px rgba(107, 114, 128, 0.4);
+            transform: translateY(-2px);
+        }
+        .btn-danger {
+            background-color: #ef4444;
+            color: white;
+            border: none;
+        }
+        .btn-danger:hover {
+            background-color: #dc2626;
+            box-shadow: 0 6px 15px rgba(239, 68, 68, 0.4);
+            transform: translateY(-2px);
+        }
+        .cleaner-section {
+            background-color: #f8faff;
+            border: 1px solid #dbeafe;
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease-in-out;
+        }
+        .cleaner-section:hover {
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+            transform: translateY(-1px);
+        }
+        .cleaner-section .remove-cleaner-btn {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            background-color: #ef4444;
+            color: white;
+            border-radius: 9999px;
+            padding: 0.6rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: all 0.2s ease-in-out;
+        }
+        .cleaner-section .remove-cleaner-btn:hover {
+            background-color: #dc2626;
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        .area-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            background-color: #ffffff;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s ease-in-out;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        .area-item:hover {
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+            transform: translateY(-1px);
+        }
+        .area-item input[type="text"] {
+            flex-grow: 1;
+            min-width: 150px;
+            margin-right: 0;
+        }
+        .area-item .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 65px;
+            height: 36px;
+            flex-shrink: 0;
+        }
+        .area-item .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .area-item .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #a0aec0;
+            transition: .4s;
+            border-radius: 34px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+        .area-item .slider:before {
+            position: absolute;
+            content: "";
+            height: 28px;
+            width: 28px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .area-item input:checked + .slider {
+            background-color: #48bb78;
+        }
+        .area-item input:focus + .slider {
+            box-shadow: 0 0 1px #48bb78;
+        }
+        .area-item input:checked + .slider:before {
+            transform: translateX(29px);
+        }
+        .area-item .status-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #4a5568;
+            min-width: 50px;
+            text-align: center;
+            transition: all 0.3s ease-in-out;
+            flex-shrink: 0;
+        }
+        .status-label[data-status="dirty"] {
+            color: #e53e3e;
+        }
+        .status-label[data-status="clean"] {
+            color: #38a169;
+        }
+        .area-item .remove-area-btn {
+            flex-shrink: 0;
+            margin-left: auto;
+        }
+        .message-box {
+            background-color: #fffbeb;
+            border: 1px solid #fbd38d;
+            color: #9c4221;
+            padding: 1.25rem;
+            border-radius: 0.75rem;
+            margin-top: 2rem;
+            display: none;
+            font-weight: 500;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            animation: fadeIn 0.5s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive adjustments for very small screens */
+        @media (max-width: 480px) {
+            .main-container {
+                padding: 1.5rem;
+            }
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            .header p {
+                font-size: 1rem;
+            }
+            .cleaning-report-section h1 {
+                font-size: 1.8rem;
+            }
+            .area-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+            .area-item input[type="text"] {
+                width: 100%;
+                min-width: unset;
+            }
+            .area-item .status-label {
+                min-width: unset;
+                text-align: left;
+            }
+            .area-item .toggle-switch {
+                align-self: flex-end;
+            }
+            .area-item .remove-area-btn {
+                align-self: flex-end;
+                margin-left: 0;
+            }
+            .cleaner-section {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <header class="header">
+            <h1>Panel de Control de Reportes</h1>
+            <p>Genera y envía tus reportes de limpieza fácilmente.</p>
+        </header>
+
+        <div id="cleaningReportSection" class="cleaning-report-section">
+            <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">Reporte de Limpieza</h1>
+
+            <form id="cleaningReportForm" class="space-y-6">
+                <!-- Nuevos Selectores para Tipo de Reporte y Tipo de Limpieza -->
+                <div class="input-group">
+                    <label for="reportType">Tipo de Reporte:</label>
+                    <select id="reportType" name="reportType" class="rounded-lg" required>
+                        <option value="">Selecciona el tipo de reporte</option>
+                        <option value="Reporte de Limpieza Dulcería">Dulcería</option>
+                        <option value="Reporte de Limpieza Operaciones">Operaciones</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="cleaningType">Tipo de Limpieza:</label>
+                    <select id="cleaningType" name="cleaningType" class="rounded-lg" required>
+                        <option value="">Selecciona el tipo de limpieza</option>
+                        <option value="Apoyo de Cierre">Apoyo de Cierre</option>
+                        <option value="Limpieza Profunda">Limpieza Profunda</option>
+                    </select>
+                </div>
+
+                <!-- Sección de Información General -->
+                <div class="input-group">
+                    <label for="reportDate">Fecha:</label>
+                    <input type="date" id="reportDate" name="reportDate" class="rounded-lg" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="supervisorName">Nombre del Supervisor:</label>
+                    <input type="text" id="supervisorName" name="supervisorName" placeholder="Ingrese nombre del supervisor" class="rounded-lg" required>
+                </div>
+
+                <!-- Sección de Encargados de Apoyo Dinámicos -->
+                <h2 class="text-xl font-semibold text-gray-700 mt-8 mb-4">Encargados de Apoyo y sus Actividades</h2>
+                <div id="cleanersContainer" class="space-y-6">
+                    <!-- Los encargados se añadirán aquí dinámicamente -->
+                </div>
+                <button type="button" id="addCleanerBtn" class="btn btn-secondary w-full">Añadir Otro Encargado</button>
+
+                <!-- Botón de Envío a WhatsApp -->
+                <button type="submit" class="btn btn-primary w-full mt-8">Enviar Reporte por WhatsApp</button>
+            </form>
+
+            <div id="messageBox" class="message-box mt-4">
+                <p>Por favor, complete todos los campos requeridos antes de enviar.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const cleaningReportForm = document.getElementById('cleaningReportForm');
+            const cleanersContainer = document.getElementById('cleanersContainer');
+            const addCleanerBtn = document.getElementById('addCleanerBtn');
+            const messageBox = document.getElementById('messageBox');
+
+            let cleanerCounter = 0; // Contador global para las secciones de encargados
+
+            // Función para añadir una nueva área de limpieza dentro de la sección de un encargado específico
+            function addCleaningArea(cleanerAreaContainer) {
+                const areaId = `area_${Date.now()}_${Math.floor(Math.random() * 1000)}`; // ID único para cada área
+                const areaDiv = document.createElement('div');
+                areaDiv.classList.add('area-item');
+                areaDiv.dataset.areaId = areaId;
+
+                areaDiv.innerHTML = `
+                    <input type="text" name="areaName_${areaId}" placeholder="Nombre del Área (Ej: Baños, Cocina)" class="rounded-lg flex-grow" required>
+                    <span class="status-label text-red-500 font-bold" data-status="dirty">SUCIO</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" name="areaStatus_${areaId}">
+                        <span class="slider round"></span>
+                    </label>
+                    <span class="status-label text-green-500 font-bold hidden" data-status="clean">LIMPIO</span>
+                    <button type="button" class="btn btn-danger p-2 rounded-full flex-shrink-0 remove-area-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm6 0a1 1 0 11-2 0v6a1 1 0 112 0V8z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                `;
+                cleanerAreaContainer.appendChild(areaDiv);
+
+                // Añadir listeners de eventos para los nuevos elementos
+                const removeBtn = areaDiv.querySelector('.remove-area-btn');
+                removeBtn.addEventListener('click', () => {
+                    areaDiv.remove();
+                });
+
+                const statusCheckbox = areaDiv.querySelector(`input[name="areaStatus_${areaId}"]`);
+                const dirtyLabel = areaDiv.querySelector('span[data-status="dirty"]');
+                const cleanLabel = areaDiv.querySelector('span[data-status="clean"]');
+
+                statusCheckbox.addEventListener('change', (event) => {
+                    if (event.target.checked) {
+                        dirtyLabel.classList.add('hidden');
+                        cleanLabel.classList.remove('hidden');
+                    } else {
+                        dirtyLabel.classList.remove('hidden');
+                        cleanLabel.classList.add('hidden');
+                    }
+                });
+            }
+
+            // Función para añadir una nueva sección de encargado
+            function addCleanerSection() {
+                cleanerCounter++;
+                const cleanerSectionId = `cleaner_${cleanerCounter}`;
+                const cleanerDiv = document.createElement('div');
+                cleanerDiv.classList.add('cleaner-section');
+                cleanerDiv.dataset.cleanerId = cleanerSectionId;
+
+                cleanerDiv.innerHTML = `
+                    <button type="button" class="remove-cleaner-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm6 0a1 1 0 11-2 0v6a1 1 0 112 0V8z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                    <div class="input-group mb-4">
+                        <label for="cleanerName_${cleanerSectionId}">Nombre del Encargado de Apoyo:</label>
+                        <input type="text" id="cleanerName_${cleanerSectionId}" name="cleanerName_${cleanerSectionId}" placeholder="Ingrese nombre del encargado" class="rounded-lg" required>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-600 mb-3">Áreas de Limpieza Asignadas:</h3>
+                    <div id="cleaningAreasContainer_${cleanerSectionId}" class="cleaning-areas-container space-y-4">
+                        <!-- Las áreas para este encargado se añadirán aquí dinámicamente -->
+                    </div>
+                    <button type="button" class="btn btn-secondary w-full mt-4 add-area-btn">Añadir Área para este Encargado</button>
+                    <div class="input-group mt-6">
+                        <label for="comments_${cleanerSectionId}">Comentarios Adicionales para este Encargado:</label>
+                        <textarea id="comments_${cleanerSectionId}" name="comments_${cleanerSectionId}" rows="3" placeholder="Observaciones específicas para este encargado..." class="rounded-lg"></textarea>
+                    </div>
+                `;
+                cleanersContainer.appendChild(cleanerDiv);
+
+                // Añadir listeners de eventos para la nueva sección de encargado
+                const removeCleanerBtn = cleanerDiv.querySelector('.remove-cleaner-btn');
+                removeCleanerBtn.addEventListener('click', () => {
+                    cleanerDiv.remove();
+                });
+
+                const addAreaBtnForCleaner = cleanerDiv.querySelector('.add-area-btn');
+                const cleanerAreaContainer = cleanerDiv.querySelector(`.cleaning-areas-container`);
+
+                addAreaBtnForCleaner.addEventListener('click', () => {
+                    addCleaningArea(cleanerAreaContainer);
+                });
+
+                // Añadir un área inicial para el encargado recién añadido
+                addCleaningArea(cleanerAreaContainer);
+            }
+
+            // Añadir la primera sección de encargado cuando la página se carga
+            addCleanerSection();
+
+            // Listener de eventos para el botón "Añadir Otro Encargado"
+            addCleanerBtn.addEventListener('click', addCleanerSection);
+
+            // Listener de eventos para el envío del formulario
+            cleaningReportForm.addEventListener('submit', (event) => {
+                event.preventDefault(); // Prevenir el envío predeterminado del formulario
+
+                // Obtener los valores de los nuevos selectores
+                const reportType = document.getElementById('reportType').value;
+                const cleaningType = document.getElementById('cleaningType').value;
+
+                // Validar campos del formulario
+                const reportDate = document.getElementById('reportDate').value;
+                const supervisorName = document.getElementById('supervisorName').value.trim();
+
+                if (!reportType || !cleaningType || !reportDate || !supervisorName) {
+                    messageBox.textContent = 'Por favor, complete todos los campos de información general (Tipo de Reporte, Tipo de Limpieza, Fecha, Supervisor).';
+                    messageBox.style.display = 'block';
+                    return;
+                }
+
+                const allCleanerSections = cleanersContainer.querySelectorAll('.cleaner-section');
+                if (allCleanerSections.length === 0) {
+                    messageBox.textContent = 'Debe añadir al menos un encargado de apoyo.';
+                    messageBox.style.display = 'block';
+                    return;
+                }
+
+                let allCleanersValid = true;
+                let allAreasValid = true;
+                const cleanersData = [];
+
+                allCleanerSections.forEach(cleanerDiv => {
+                    const cleanerNameInput = cleanerDiv.querySelector('input[type="text"]');
+                    const cleanerName = cleanerNameInput.value.trim();
+                    const commentsInput = cleanerDiv.querySelector('textarea');
+
+                    if (!cleanerName) {
+                        allCleanersValid = false;
+                    }
+
+                    const areasForThisCleaner = [];
+                    const currentCleaningAreasContainer = cleanerDiv.querySelector('.cleaning-areas-container');
+                    const areaItems = currentCleaningAreasContainer.querySelectorAll('.area-item');
+
+                    if (areaItems.length === 0) {
+                        allAreasValid = false;
+                    }
+
+                    areaItems.forEach(areaDiv => {
+                        const areaNameInput = areaDiv.querySelector('input[type="text"]');
+                        const areaStatusCheckbox = areaDiv.querySelector('input[type="checkbox"]');
+
+                        if (!areaNameInput.value.trim()) {
+                            allAreasValid = false;
+                        }
+
+                        areasForThisCleaner.push({
+                            name: areaNameInput.value.trim(),
+                            status: areaStatusCheckbox.checked ? 'LIMPIO' : 'SUCIO'
+                        });
+                    });
+
+                    cleanersData.push({
+                        name: cleanerName,
+                        areas: areasForThisCleaner,
+                        comments: commentsInput.value.trim()
+                    });
+                });
+
+                if (!allCleanersValid) {
+                    messageBox.textContent = 'Por favor, ingrese el nombre para todos los encargados de apoyo.';
+                    messageBox.style.display = 'block';
+                    return;
+                }
+
+                if (!allAreasValid) {
+                    messageBox.textContent = 'Por favor, ingrese el nombre para todas las áreas de limpieza asignadas a cada encargado.';
+                    messageBox.style.display = 'block';
+                    return;
+                }
+
+                messageBox.style.display = 'none';
+
+                // Recopilar datos del formulario
+                const formData = {
+                    reportType: reportType,
+                    cleaningType: cleaningType,
+                    date: reportDate,
+                    supervisor: supervisorName,
+                    cleaners: cleanersData,
+                };
+
+                // Formatear mensaje para WhatsApp
+                let whatsappMessage = `*Reporte de Limpieza - ${formData.reportType.replace('Reporte de Limpieza ', '')} (${formData.cleaningType})*\n\n`;
+                whatsappMessage += `*Fecha:* ${formData.date}\n`;
+                whatsappMessage += `*Supervisor:* ${formData.supervisor}\n\n`;
+
+                whatsappMessage += `*Encargados de Apoyo y sus Actividades:*\n`;
+                formData.cleaners.forEach(cleaner => {
+                    whatsappMessage += `\n*${cleaner.name}:*\n`;
+                    if (cleaner.areas.length > 0) {
+                        cleaner.areas.forEach(area => {
+                            whatsappMessage += `- ${area.name}: *${area.status}*\n`;
+                        });
+                    } else {
+                        whatsappMessage += `  (No se asignaron áreas de limpieza)\n`;
+                    }
+                    if (cleaner.comments) {
+                        whatsappMessage += `  *Comentarios:* ${cleaner.comments}\n`;
+                    }
+                });
+
+                const encodedMessage = encodeURIComponent(whatsappMessage);
+                window.open(`https://wa.me/?text=${encodedMessage}`, '_blank');
+            });
+        });
+    </script>
+</body>
+</html>
