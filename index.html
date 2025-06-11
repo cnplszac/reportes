@@ -10,7 +10,7 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(to right bottom, #e0e7ed, #c9d2da); /* Soft gradient background for the main page */
+            background: linear-gradient(135deg, #a7e0f2 0%, #d8f5ff 100%); /* More vibrant blue gradient */
             display: flex;
             justify-content: center;
             align-items: flex-start;
@@ -19,165 +19,172 @@
             color: #334155; /* Default text color */
         }
         .main-container {
-            background-color: #f8fafc; /* Lighter background for the main card */
+            background: linear-gradient(135deg, #f0f4f8 0%, #ffffff 100%); /* NEW: Soft gradient for the main container */
             padding: 2.5rem; /* Increased padding */
             border-radius: 1.5rem;
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1), 0 5px 15px rgba(0, 0, 0, 0.05); /* Deeper shadow */
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2), 0 8px 15px rgba(0, 0, 0, 0.1); /* Deeper, more noticeable shadow */
             width: 100%;
             max-width: 750px; /* Wider main container */
             border: 1px solid #e2e8f0;
+            transform: translateY(0);
+            transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+        }
+        .main-container:hover {
+            transform: translateY(-5px); /* Slight lift on hover */
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25), 0 10px 20px rgba(0, 0, 0, 0.15);
         }
         .header {
             text-align: center;
             margin-bottom: 2.5rem;
         }
         .header h1 {
-            font-size: 3rem; /* Larger main title */
+            font-size: 3.2rem; /* Even larger main title */
             font-weight: 800;
-            color: #1a202c;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.08);
+            color: #0d47a1; /* Darker blue for main title */
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.15); /* More prominent shadow */
             margin-bottom: 0.75rem;
         }
         .header p {
-            font-size: 1.1rem;
+            font-size: 1.2rem; /* Slightly larger text */
             color: #4a5568;
         }
 
         /* --- Styles for the Cleaning Report Form (Adjusted for single form) --- */
         .cleaning-report-section h1 { /* Adjusted title for embedded form */
-            font-size: 2.2rem;
+            font-size: 2.5rem; /* Larger sub-heading */
             font-weight: 700;
-            color: #2d3748;
+            color: #2c3e50; /* Darker grey for sub-headings */
             margin-bottom: 2rem;
-            text-shadow: none; /* Remove text shadow for sub-heading */
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.05); /* Subtle shadow for sub-heading */
         }
         h2 {
-            font-size: 1.75rem;
+            font-size: 1.85rem; /* Larger h2 */
             font-weight: 700;
-            color: #2d3748;
+            color: #2c3e50;
             margin-top: 2rem;
             margin-bottom: 1.5rem;
         }
         h3 {
-            font-size: 1.25rem;
+            font-size: 1.35rem; /* Larger h3 */
             font-weight: 600;
             color: #4a5568;
             margin-bottom: 1rem;
         }
         .input-group label {
             font-weight: 600;
-            margin-bottom: 0.6rem;
+            margin-bottom: 0.7rem; /* Slightly more space */
             display: block;
             color: #4a5568;
-            font-size: 0.95rem;
+            font-size: 1rem; /* Slightly larger label font */
         }
         .input-group input, .input-group select, .input-group textarea {
             width: 100%;
-            padding: 0.9rem;
-            border: 1px solid #cbd5e0;
-            border-radius: 0.75rem;
-            font-size: 1.05rem;
+            padding: 1rem; /* More padding */
+            border: 1px solid #c0d4e7; /* Lighter, subtle border */
+            border-radius: 0.8rem; /* More rounded */
+            font-size: 1.1rem; /* Slightly larger font */
             color: #2d3748;
-            transition: all 0.2s ease-in-out;
-            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease-in-out; /* Smoother transitions */
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.08); /* Deeper inner shadow */
         }
         .input-group input:focus, .input-group select:focus, .input-group textarea:focus {
             outline: none;
-            border-color: #4299e1;
-            box-shadow: 0 0 0 4px rgba(66, 153, 225, 0.3), inset 0 1px 3px rgba(0, 0, 0, 0.08);
-            background-color: #f7fafc;
+            border-color: #3f51b5; /* Deeper blue on focus */
+            box-shadow: 0 0 0 5px rgba(63, 81, 181, 0.4), inset 0 2px 5px rgba(0, 0, 0, 0.1); /* More prominent focus ring with deeper shadow */
+            background-color: #f0f8ff; /* Lighter background change on focus */
         }
         .btn {
-            padding: 0.9rem 2rem;
-            border-radius: 0.75rem;
-            font-weight: 700;
+            padding: 1rem 2.2rem; /* More padding */
+            border-radius: 0.85rem; /* More rounded */
+            font-weight: 700; /* Bolder text */
             cursor: pointer;
-            transition: all 0.2s ease-in-out;
-            letter-spacing: 0.025em;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease-in-out; /* Smoother transitions */
+            letter-spacing: 0.03em; /* Slightly more spaced letters */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15); /* More prominent default shadow */
+            text-transform: uppercase; /* Uppercase text for buttons */
         }
         .btn-primary {
-            background: linear-gradient(to right, #4299e1, #2b6cb0);
+            background: linear-gradient(45deg, #42a5f5, #1976d2); /* Vibrant blue gradient */
             color: white;
             border: none;
         }
         .btn-primary:hover {
-            background: linear-gradient(to right, #2b6cb0, #3182ce);
-            box-shadow: 0 6px 15px rgba(43, 108, 176, 0.4);
-            transform: translateY(-2px);
+            background: linear-gradient(45deg, #1976d2, #3f51b5); /* Darker blue gradient on hover */
+            box-shadow: 0 8px 20px rgba(25, 118, 210, 0.5); /* Deeper shadow on hover */
+            transform: translateY(-3px); /* More noticeable lift */
         }
         .btn-secondary {
-            background-color: #6b7280;
+            background: linear-gradient(45deg, #90a4ae, #607d8b); /* Grey gradient */
             color: white;
             border: none;
         }
         .btn-secondary:hover {
-            background-color: #4b5563;
-            box-shadow: 0 6px 15px rgba(107, 114, 128, 0.4);
-            transform: translateY(-2px);
+            background: linear-gradient(45deg, #607d8b, #455a64); /* Darker grey gradient on hover */
+            box-shadow: 0 8px 20px rgba(96, 125, 139, 0.5);
+            transform: translateY(-3px);
         }
         .btn-danger {
-            background-color: #ef4444;
+            background: linear-gradient(45deg, #ef5350, #d32f2f); /* Red gradient */
             color: white;
             border: none;
         }
         .btn-danger:hover {
-            background-color: #dc2626;
-            box-shadow: 0 6px 15px rgba(239, 68, 68, 0.4);
-            transform: translateY(-2px);
+            background: linear-gradient(45deg, #d32f2f, #c62828); /* Darker red gradient on hover */
+            box-shadow: 0 8px 20px rgba(211, 47, 47, 0.5);
+            transform: translateY(-3px);
         }
         .cleaner-section {
             background-color: #f8faff;
-            border: 1px solid #dbeafe;
-            border-radius: 1rem;
-            padding: 2rem;
+            border: 1px solid #c7e7f6; /* Lighter, more appealing blue border */
+            border-radius: 1.2rem; /* More rounded */
+            padding: 2.2rem; /* More padding */
             margin-bottom: 2rem;
             position: relative;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); /* Subtle shadow */
             transition: all 0.3s ease-in-out;
         }
         .cleaner-section:hover {
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px); /* Slight lift */
         }
         .cleaner-section .remove-cleaner-btn {
             position: absolute;
-            top: 0.75rem;
-            right: 0.75rem;
-            background-color: #ef4444;
+            top: 1rem; /* Adjusted position */
+            right: 1rem; /* Adjusted position */
+            background-color: #ef5350; /* Match new danger button color */
             color: white;
             border-radius: 9999px;
-            padding: 0.6rem;
+            padding: 0.7rem; /* Larger hit area */
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 36px;
-            height: 36px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            width: 40px; /* Larger circle */
+            height: 40px; /* Larger circle */
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
             transition: all 0.2s ease-in-out;
         }
         .cleaner-section .remove-cleaner-btn:hover {
-            background-color: #dc2626;
-            transform: scale(1.1);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            background-color: #d32f2f;
+            transform: scale(1.15); /* More prominent pop effect */
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.35);
         }
         .area-item {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 1.25rem; /* More space between items */
             margin-bottom: 1rem;
-            background-color: #ffffff;
-            padding: 1rem;
-            border-radius: 0.75rem;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            background-color: #f0f7fc; /* Very light blue background for area items */
+            padding: 1.2rem; /* More padding */
+            border-radius: 0.85rem; /* More rounded */
+            border: 1px solid #d4ebf8; /* Subtle blue border */
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08); /* Subtle shadow */
             transition: all 0.2s ease-in-out;
             flex-wrap: wrap;
             justify-content: space-between;
         }
         .area-item:hover {
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-            transform: translateY(-1px);
+            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px); /* Slight lift */
         }
         .area-item input[type="text"] {
             flex-grow: 1;
@@ -187,8 +194,8 @@
         .area-item .toggle-switch {
             position: relative;
             display: inline-block;
-            width: 65px;
-            height: 36px;
+            width: 70px; /* Wider switch */
+            height: 38px; /* Taller switch */
             flex-shrink: 0;
         }
         .area-item .toggle-switch input {
@@ -203,65 +210,65 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: #a0aec0;
+            background-color: #bdbdbd; /* Lighter grey for "dirty" */
             transition: .4s;
-            border-radius: 34px;
-            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+            border-radius: 38px; /* Match height for perfect roundness */
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.25);
         }
         .area-item .slider:before {
             position: absolute;
             content: "";
-            height: 28px;
-            width: 28px;
+            height: 30px; /* Slightly larger handle */
+            width: 30px; /* Slightly larger handle */
             left: 4px;
             bottom: 4px;
             background-color: white;
             transition: .4s;
             border-radius: 50%;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
         }
         .area-item input:checked + .slider {
-            background-color: #48bb78;
+            background-color: #66bb6a; /* More vibrant green for "clean" */
         }
         .area-item input:focus + .slider {
-            box-shadow: 0 0 1px #48bb78;
+            box-shadow: 0 0 1px #66bb6a;
         }
         .area-item input:checked + .slider:before {
-            transform: translateX(29px);
+            transform: translateX(32px); /* Adjusted translation for wider switch */
         }
         .area-item .status-label {
-            font-size: 0.9rem;
+            font-size: 1rem; /* Slightly larger font for labels */
             font-weight: 600;
             color: #4a5568;
-            min-width: 50px;
+            min-width: 60px; /* Ensure labels don't jump */
             text-align: center;
             transition: all 0.3s ease-in-out;
             flex-shrink: 0;
         }
         .status-label[data-status="dirty"] {
-            color: #e53e3e;
+            color: #c62828; /* Deeper red for dirty */
         }
         .status-label[data-status="clean"] {
-            color: #38a169;
+            color: #388e3c; /* Deeper green for clean */
         }
         .area-item .remove-area-btn {
             flex-shrink: 0;
             margin-left: auto;
         }
         .message-box {
-            background-color: #fffbeb;
-            border: 1px solid #fbd38d;
-            color: #9c4221;
-            padding: 1.25rem;
-            border-radius: 0.75rem;
+            background: linear-gradient(45deg, #ffe082, #ffb300); /* Yellow-orange gradient */
+            border: 1px solid #ffca28;
+            color: #5d4037; /* Darker brown text */
+            padding: 1.5rem; /* More padding */
+            border-radius: 0.85rem;
             margin-top: 2rem;
             display: none;
-            font-weight: 500;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             animation: fadeIn 0.5s ease-out;
         }
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(15px); } /* More noticeable fade-in effect */
             to { opacity: 1; transform: translateY(0); }
         }
 
@@ -279,10 +286,14 @@
             .cleaning-report-section h1 {
                 font-size: 1.8rem;
             }
+            .cleaner-section {
+                padding: 1.5rem;
+            }
             .area-item {
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 0.5rem;
+                padding: 1rem; /* Reduced padding for smaller screens */
             }
             .area-item input[type="text"] {
                 width: 100%;
@@ -298,9 +309,6 @@
             .area-item .remove-area-btn {
                 align-self: flex-end;
                 margin-left: 0;
-            }
-            .cleaner-section {
-                padding: 1.5rem;
             }
         }
     </style>
