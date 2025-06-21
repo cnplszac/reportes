@@ -3,34 +3,470 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menú Principal de Actividades</title>
+    <title>Sistema de Reportes y Asignación</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome CDN for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" xintegrity="sha512-Fo3rlalDLuUpqj7JjLzW4z5L4v8kPz8S8V3uU3L5F5L5j7g5L5v5L5w5L5x5L5y5L5z5L5a5b5c5d5e5f5g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        html, body {
+            height: 100%; /* Ensures html and body take full height */
+            margin: 0;
+            padding: 0;
+        }
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #42a5f5 0%, #1976d2 100%); /* Blue gradient for background */
+            background: linear-gradient(135deg, #a7e0f2 0%, #d8f5ff 100%); /* More vibrant blue gradient */
             display: flex;
             justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            align-items: flex-start;
+            min-height: 100vh; /* Uses min-height to ensure at least 100% of viewport height */
             padding: 2rem;
-            color: #ffffff; /* White text for contrast */
-            overflow: auto; /* Allow scrolling if content overflows */
+            color: #334155; /* Default text color */
+            overflow-y: auto; /* Allows vertical scrolling if content overflows */
+            overflow-x: hidden; /* Prevents horizontal scrolling */
         }
-        .menu-container {
-            background: rgba(255, 255, 255, 0.95); /* Slightly transparent white background */
-            padding: 3.5rem; /* More generous padding */
-            border-radius: 2rem;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3), 0 10px 20px rgba(0, 0, 0, 0.15); /* Stronger shadow for depth */
+        .main-container {
+            background: linear-gradient(135deg, #f0f4f8 0%, #ffffff 100%); /* Soft gradient for the main container */
+            padding: 2.5rem; /* Increased padding */
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2), 0 8px 15px rgba(0, 0, 0, 0.1); /* Deeper, more noticeable shadow */
             width: 100%;
-            max-width: 800px; /* Max width for menu container */
+            max-width: 950px; /* Adjusted max-width to accommodate tabs better */
+            border: 1px solid #e2e8f0;
+            transform: translateY(0);
+            transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+        }
+        .main-container:hover {
+            transform: translateY(-5px); /* Slight lift on hover */
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25), 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+        .header {
             text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            animation: fadeInScale 0.8s ease-out forwards; /* Animation on load */
+            margin-bottom: 2.5rem;
+        }
+        .header h1 {
+            font-size: 3.2rem; /* Even larger main title */
+            font-weight: 800;
+            color: #0d47a1; /* Darker blue for main title */
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.15); /* More prominent shadow */
+            margin-bottom: 0.75rem;
+        }
+        .header p {
+            font-size: 1.2rem; /* Slightly larger text */
+            color: #4a5568;
+        }
+        .tabs-container {
+            display: flex;
+            border-bottom: 2px solid #e2e8f0;
+            margin-bottom: 2rem;
+            overflow-x: auto; /* Allow horizontal scrolling for tabs on small screens */
+            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+            justify-content: center; /* Center tabs */
+            gap: 1rem; /* Space between tabs */
+        }
+        .tab-button {
+            padding: 0.8rem 1.8rem; /* Increased padding */
+            font-weight: 700;
+            color: #64748b;
+            cursor: pointer;
+            border-bottom: 3px solid transparent; /* Thicker transparent border */
+            transition: all 0.3s ease-in-out;
+            white-space: nowrap; /* Prevent tab text from wrapping */
+            background-color: transparent;
+            border-top-left-radius: 0.6rem;
+            border-top-right-radius: 0.6rem;
+            position: relative;
+        }
+        .tab-button:hover {
+            color: #1976d2; /* Darker blue on hover */
+            background-color: #e0f2f7; /* Lighter blue on hover */
+            border-bottom-color: #3f51b5; /* Highlight border on hover */
+            transform: translateY(-2px); /* Slight lift on hover */
+        }
+        .tab-button.active {
+            color: #1976d2; /* Darker blue when active */
+            border-bottom: 4px solid #1976d2; /* Even thicker border for active */
+            background-color: #e6f3fb; /* More distinct light blue background */
+            font-weight: 800; /* Make active tab text bolder */
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.1); /* Stronger shadow on active tab */
+            transform: translateY(-3px); /* More noticeable lift on active */
+        }
+        .tab-content {
+            display: none; /* Hide all tab content by default */
+            padding: 1.5rem 0; /* Padding for content */
+        }
+        .tab-content.active {
+            display: block; /* Show active tab content */
+        }
+
+        /* --- Common Styles for all forms within tabs --- */
+        .form-section-container { /* Renamed from cleaning-report-section to be more generic */
+            background-color: #ffffff;
+            padding: 2.5rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05), 0 4px 10px rgba(0, 0, 0, 0.03);
+            width: 100%;
+            border: 1px solid #e2e8f0;
+        }
+        .form-section-container h1 { /* Adjusted title for embedded forms */
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 2rem;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.05);
+        }
+        h2 {
+            font-size: 1.85rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-top: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        h3 {
+            font-size: 1.35rem;
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 1rem;
+        }
+        .input-group label {
+            font-weight: 600;
+            margin-bottom: 0.7rem;
+            display: block;
+            color: #4a5568;
+            font-size: 1rem;
+        }
+        .input-group input, .input-group select, .input-group textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid #c0d4e7;
+            border-radius: 0.8rem;
+            font-size: 1.1rem;
+            color: #2d3748;
+            transition: all 0.3s ease-in-out;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.08);
+        }
+        .input-group input:focus, .input-group select:focus, .input-group textarea:focus {
+            outline: none;
+            border-color: #3f51b5;
+            box-shadow: 0 0 0 5px rgba(63, 81, 181, 0.4), inset 0 2px 5px rgba(0, 0, 0, 0.1);
+            background-color: #f0f8ff;
+        }
+        .btn {
+            padding: 1rem 2.2rem;
+            border-radius: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            letter-spacing: 0.03em;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            text-transform: uppercase;
+        }
+        .btn-primary {
+            background: linear-gradient(45deg, #42a5f5, #1976d2);
+            color: white;
+            border: none;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #1976d2, #3f51b5);
+            box-shadow: 0 8px 20px rgba(25, 118, 210, 0.5);
+            transform: translateY(-3px);
+        }
+        .btn-secondary {
+            background: linear-gradient(45deg, #90a4ae, #607d8b);
+            color: white;
+            border: none;
+        }
+        .btn-secondary:hover {
+            background: linear-gradient(45deg, #607d8b, #455a64);
+            box-shadow: 0 8px 20px rgba(96, 125, 139, 0.5);
+            transform: translateY(-3px);
+        }
+        .btn-danger {
+            background: linear-gradient(45deg, #ef5350, #d32f2f);
+            color: white;
+            border: none;
+        }
+        .btn-danger:hover {
+            background: linear-gradient(45deg, #d32f2f, #c62828);
+            box-shadow: 0 8px 20px rgba(211, 47, 47, 0.5);
+            transform: translateY(-3px);
+        }
+        /* New style for the back button */
+        .btn-back-to-home {
+            background: linear-gradient(45deg, #607d8b, #455a64); /* Grayish-blue for subtle return */
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.9rem;
+            border-radius: 0.7rem;
+            margin-bottom: 1.5rem; /* Space below button */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: all 0.2s ease-in-out;
+            display: inline-flex; /* Allows icon and text to align */
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-back-to-home:hover {
+            background: linear-gradient(45deg, #455a64, #37474f);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+        .cleaner-section { /* Also used for responsible cleaner sections in assignment form */
+            background-color: #f8faff;
+            border: 1px solid #c7e7f6;
+            border-radius: 1.2rem;
+            padding: 2.2rem;
+            margin-bottom: 2rem;
+            position: relative;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease-in-out;
+        }
+        .cleaner-section:hover {
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+        .cleaner-section .remove-cleaner-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background-color: #ef5350;
+            color: white;
+            border-radius: 9999px;
+            padding: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+            transition: all 0.2s ease-in-out;
+        }
+        .cleaner-section .remove-cleaner-btn:hover {
+            background-color: #d32f2f;
+            transform: scale(1.15);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.35);
+        }
+        .area-item { /* Also used for activities in assignment form */
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            margin-bottom: 1rem;
+            background-color: #f0f7fc;
+            padding: 1.2rem;
+            border-radius: 0.85rem;
+            border: 1px solid #d4ebf8;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+            transition: all 0.2s ease-in-out;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        .area-item:hover {
+            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+        }
+        .area-item input[type="text"] {
+            flex-grow: 1;
+            min-width: 150px;
+            margin-right: 0;
+        }
+        .area-item .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 70px;
+            height: 38px;
+            flex-shrink: 0;
+        }
+        .area-item .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .area-item .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #bdbdbd;
+            transition: .4s;
+            border-radius: 38px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.25);
+        }
+        .area-item .slider:before {
+            position: absolute;
+            content: "";
+            height: 30px;
+            width: 30px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+        }
+        .area-item input:checked + .slider {
+            background-color: #66bb6a;
+        }
+        .area-item input:focus + .slider {
+            box-shadow: 0 0 1px #66bb6a;
+        }
+        .area-item input:checked + .slider:before {
+            transform: translateX(32px);
+        }
+        .area-item .status-label {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #4a5568;
+            min-width: 60px;
+            text-align: center;
+            transition: all 0.3s ease-in-out;
+            flex-shrink: 0;
+        }
+        .status-label[data-status="dirty"] {
+            color: #c62828;
+        }
+        .status-label[data-status="clean"] {
+            color: #388e3c;
+        }
+        .area-item .remove-area-btn {
+            flex-shrink: 0;
+            margin-left: auto;
+        }
+        .message-box {
+            background: linear-gradient(45deg, #ffe082, #ffb300);
+            border: 1px solid #ffca28;
+            color: #5d4037;
+            padding: 1.5rem;
+            border-radius: 0.85rem;
+            margin-top: 2rem;
+            display: none;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.5s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Styles specific to Turno Entrega activities */
+        .activity-item-full {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            background-color: #f0f7fc;
+            padding: 1.2rem;
+            border-radius: 0.85rem;
+            border: 1px solid #d4ebf8;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+            transition: all 0.2s ease-in-out;
+        }
+        .activity-item-full:hover {
+            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+        }
+        .activity-item-full .status-icon {
+            font-size: 1.5rem; /* Larger icons */
+            width: 2rem; /* Fixed width for alignment */
+            text-align: center;
+        }
+        .activity-item-full input[type="checkbox"] {
+            min-width: 1.25rem; /* Ensure checkbox is visible */
+            min-height: 1.25rem;
+            margin-right: 0.5rem;
+        }
+        .activity-item-full .activity-main-line {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            justify-content: space-between;
+            flex-wrap: wrap; /* Allow wrapping on small screens */
+        }
+        .activity-item-full .activity-text {
+            font-weight: 600;
+            color: #2d3748;
+            flex-grow: 1; /* Allow text to take available space */
+        }
+        .activity-item-full .not-done-comment-container,
+        .activity-item-full .specific-comment-container {
+            width: 100%; /* Take full width below on small screens */
+        }
+        @media (min-width: 640px) { /* Tailwind's sm breakpoint */
+            .activity-item-full {
+                flex-direction: row;
+                align-items: center;
+                justify-content: flex-start;
+            }
+            .activity-item-full .activity-main-line {
+                flex-wrap: nowrap;
+            }
+            .activity-item-full .not-done-comment-container,
+            .activity-item-full .specific-comment-container {
+                width: auto; /* Revert to auto width on larger screens */
+                margin-left: auto; /* Push to the right */
+            }
+        }
+        /* Responsive adjustments for very small screens */
+        @media (max-width: 480px) {
+            .main-container {
+                padding: 1.5rem;
+            }
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            .header p {
+                font-size: 1rem;
+            }
+            .form-section-container h1 {
+                font-size: 1.8rem;
+            }
+            .cleaner-section {
+                padding: 1.5rem;
+            }
+            .area-item, .activity-item-full {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+                padding: 1rem;
+            }
+            .area-item input[type="text"], .activity-item-full input[type="text"] {
+                width: 100%;
+                min-width: unset;
+            }
+            .area-item .status-label, .activity-item-full .status-label {
+                min-width: unset;
+                text-align: left;
+            }
+            .area-item .toggle-switch, .activity-item-full .toggle-switch {
+                align-self: flex-end;
+            }
+            .area-item .remove-area-btn, .activity-item-full .remove-dynamic-activity-btn {
+                align-self: flex-end;
+                margin-left: 0;
+            }
+            .activity-item-full .activity-main-line {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .activity-item-full .status-icon {
+                margin-left: 0; /* Remove margin on small screens if stacked */
+                margin-top: 0.5rem; /* Add some top margin if stacked */
+            }
+        }
+
+        /* NEW: Styles for the Home/Dashboard tab (merged and adapted from main-menu-page) */
+        .home-tab-content {
+            padding: 2.5rem; /* Adjusted padding */
+            text-align: center;
+            animation: fadeInScale 0.8s ease-out forwards;
+            background: linear-gradient(135deg, #e6f3fb 0%, #ffffff 100%); /* Lighter background for inside the container */
+            border-radius: 1.5rem;
+            box-shadow: inset 0 5px 15px rgba(0,0,0,0.05); /* Subtle inner shadow */
         }
 
         @keyframes fadeInScale {
@@ -38,35 +474,39 @@
             to { opacity: 1; transform: scale(1) translateY(0); }
         }
 
-        .menu-container h1 {
-            font-size: 3.8rem; /* Larger and bolder title */
+        .home-tab-content h1 {
+            font-size: 3rem; /* Adjusted size */
             font-weight: 800;
-            color: #0d47a1; /* Darker blue */
-            margin-bottom: 1.5rem;
+            color: #0d47a1;
+            margin-bottom: 1rem;
             text-shadow: 2px 2px 6px rgba(0,0,0,0.1);
         }
-        .menu-container p {
-            font-size: 1.4rem; /* Larger subtitle */
+        .home-tab-content p {
+            font-size: 1.2rem; /* Adjusted size */
             color: #334155;
-            margin-bottom: 3rem;
+            margin-bottom: 2.5rem;
             line-height: 1.6;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
         }
-        .menu-grid {
+        .home-menu-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsive grid */
-            gap: 1.8rem; /* Increased gap between buttons */
+            gap: 1.5rem; /* Space between buttons */
             justify-content: center;
+            margin-top: 2rem;
         }
-        .menu-button {
+        .home-menu-button {
             display: flex;
             flex-direction: column; /* Stack icon and text */
             align-items: center;
             justify-content: center;
             background: linear-gradient(45deg, #1e88e5, #42a5f5); /* Vibrant blue gradient */
             color: white;
-            padding: 2rem 1.5rem; /* Increased padding */
+            padding: 1.8rem 1.2rem; /* Adjusted padding */
             border-radius: 1.2rem;
-            font-size: 1.25rem; /* Larger font size */
+            font-size: 1.15rem; /* Adjusted font size */
             font-weight: 700;
             text-decoration: none;
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -74,43 +514,966 @@
             border: 2px solid rgba(255, 255, 255, 0.5); /* Subtle white border */
             text-transform: uppercase;
             letter-spacing: 0.05em;
+            cursor: pointer; /* Indicate it's clickable */
         }
-        .menu-button:hover {
+        .home-menu-button:hover {
             background: linear-gradient(45deg, #1565c0, #1976d2); /* Darker blue on hover */
             transform: translateY(-8px) scale(1.03); /* More pronounced lift and slight scale */
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3), 0 6px 12px rgba(0, 0, 0, 0.2);
             border-color: #ffffff; /* Brighter border on hover */
         }
-        .menu-button i {
-            font-size: 3.5rem; /* Larger icons */
-            margin-bottom: 1rem; /* Space between icon and text */
+        .home-menu-button i {
+            font-size: 3rem; /* Adjusted icon size */
+            margin-bottom: 0.8rem; /* Space between icon and text */
             color: #b3e5fc; /* Lighter blue for icons */
             transition: color 0.3s ease-in-out;
         }
-        .menu-button:hover i {
+        .home-menu-button:hover i {
             color: #ffffff; /* White icons on hover */
+        }
+
+        /* Mobile adjustments for Home Tab */
+        @media (max-width: 768px) {
+            .home-tab-content {
+                padding: 1.5rem 1rem;
+            }
+            .home-tab-content h1 {
+                font-size: 2rem;
+            }
+            .home-tab-content p {
+                font-size: 1rem;
+                margin-bottom: 1.5rem;
+            }
+            .home-menu-grid {
+                grid-template-columns: 1fr; /* Stack buttons vertically on small screens */
+                gap: 1rem;
+            }
+            .home-menu-button {
+                padding: 1.5rem 1rem;
+                font-size: 1rem;
+                border-radius: 1rem;
+            }
+            .home-menu-button i {
+                font-size: 2.5rem;
+                margin-bottom: 0.6rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="menu-container">
-        <h1><i class="fas fa-cubes mr-4"></i>Gestión Integral de Operaciones</h1>
-        <p>Selecciona una opción para comenzar a gestionar tus actividades y reportes diarios.</p>
+    <div class="main-container">
+        <header class="header">
+            <h1><i class="fas fa-tasks mr-3 text-blue-700"></i>Panel de Control de Actividades</h1>
+            <p>Genera y envía tus reportes y asignaciones de limpieza fácilmente.</p>
+        </header>
 
-        <div class="menu-grid">
-            <a href="./main-report-page.html?tab=cleaningReportTab" class="menu-button">
-                <i class="fas fa-file-alt"></i>
-                <span>Reporte de Limpieza</span>
-            </a>
-            <a href="./main-report-page.html?tab=assignAreasTab" class="menu-button">
-                <i class="fas fa-tasks"></i>
-                <span>Asignar Áreas de Limpieza</span>
-            </a>
-            <a href="./main-report-page.html?tab=turnoEntregaTab" class="menu-button">
-                <i class="fas fa-handshake"></i>
-                <span>Actividades Entrega de Turno</span>
-            </a>
+        <div class="tabs-container">
+            <button class="tab-button active" data-tab-id="homeTab">Inicio</button>
+            <button class="tab-button" data-tab-id="cleaningReportTab">Reporte de Limpieza</button>
+            <button class="tab-button" data-tab-id="assignAreasTab">Asignar Áreas de Limpieza</button>
+            <button class="tab-button" data-tab-id="turnoEntregaTab">Actividades Entrega de Turno</button>
         </div>
+
+        <!-- NEW: Pestaña de Inicio/Dashboard -->
+        <div id="homeTab" class="tab-content active">
+            <div class="home-tab-content">
+                <h1><i class="fas fa-cubes mr-4"></i>Gestión Integral de Operaciones</h1>
+                <p>Bienvenido al sistema de gestión. Selecciona una opción para acceder a los diferentes módulos de reportes y asignaciones.</p>
+
+                <div class="home-menu-grid">
+                    <button class="home-menu-button" data-target-tab="cleaningReportTab">
+                        <i class="fas fa-file-alt"></i>
+                        <span>Reporte de Limpieza</span>
+                    </button>
+                    <button class="home-menu-button" data-target-tab="assignAreasTab">
+                        <i class="fas fa-tasks"></i>
+                        <span>Asignar Áreas de Limpieza</span>
+                    </button>
+                    <button class="home-menu-button" data-target-tab="turnoEntregaTab">
+                        <i class="fas fa-handshake"></i>
+                        <span>Actividades Entrega de Turno</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pestaña: Reporte de Limpieza -->
+        <div id="cleaningReportTab" class="tab-content">
+            <div class="form-section-container">
+                <!-- NEW: Back to Home Button -->
+                <button type="button" class="btn-back-to-home" onclick="showTab('homeTab')">
+                    <i class="fas fa-arrow-left mr-2"></i>Volver al Inicio
+                </button>
+                <h1 class="text-3xl font-bold text-center text-gray-800 mb-8"><i class="fas fa-file-alt mr-2 text-blue-600"></i>Reporte de Limpieza</h1>
+
+                <form id="cleaningReportForm" class="space-y-6">
+                    <!-- Nuevos Selectores para Tipo de Reporte y Tipo de Limpieza -->
+                    <div class="input-group">
+                        <label for="reportType"><i class="fas fa-folder-open mr-2 text-gray-600"></i>Tipo de Reporte:</label>
+                        <select id="reportType" name="reportType" class="rounded-lg" required>
+                            <option value="">Selecciona el tipo de reporte</option>
+                            <option value="Reporte de Limpieza Dulcería">Dulcería</option>
+                            <option value="Reporte de Limpieza Operaciones">Operaciones</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="cleaningType"><i class="fas fa-broom mr-2 text-gray-600"></i>Tipo de Limpieza:</label>
+                        <select id="cleaningType" name="cleaningType" class="rounded-lg" required>
+                            <option value="">Selecciona el tipo de limpieza</option>
+                            <option value="Apoyo de Cierre">Apoyo de Cierre</option>
+                            <option value="Limpieza Profunda">Limpieza Profunda</option>
+                        </select>
+                    </div>
+
+                    <!-- Sección de Información General -->
+                    <div class="input-group">
+                        <label for="reportDate"><i class="fas fa-calendar-alt mr-2 text-gray-600"></i>Fecha:</label>
+                        <input type="date" id="reportDate" name="reportDate" class="rounded-lg" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="supervisorName"><i class="fas fa-user-tie mr-2 text-gray-600"></i>Nombre del Supervisor:</label>
+                        <input type="text" id="supervisorName" name="supervisorName" placeholder="Ingrese nombre del supervisor" class="rounded-lg" required>
+                    </div>
+
+                    <!-- Sección de Encargados de Limpieza Dinámicos -->
+                    <h2 class="text-xl font-semibold text-gray-700 mt-8 mb-4"><i class="fas fa-users-cog mr-2 text-gray-700"></i>Encargados de Limpieza y sus Actividades</h2>
+                    <div id="cleanersContainer" class="space-y-6">
+                        <!-- Los encargados se añadirán aquí dinámicamente -->
+                    </div>
+                    <button type="button" id="addCleanerBtn" class="btn btn-secondary w-full"><i class="fas fa-user-plus mr-2"></i>Añadir Otro Encargado de Limpieza</button>
+
+                    <!-- Botón de Envío a WhatsApp -->
+                    <button type="submit" class="btn btn-primary w-full mt-8"><i class="fab fa-whatsapp mr-2"></i>Enviar Reporte por WhatsApp</button>
+                </form>
+
+                <div id="messageBox" class="message-box mt-4">
+                    <p><i class="fas fa-exclamation-triangle mr-2"></i>Por favor, complete todos los campos requeridos antes de enviar.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pestaña: Asignar Áreas de Limpieza Apoyo Cierre -->
+        <div id="assignAreasTab" class="tab-content">
+            <div class="form-section-container">
+                <!-- NEW: Back to Home Button -->
+                <button type="button" class="btn-back-to-home" onclick="showTab('homeTab')">
+                    <i class="fas fa-arrow-left mr-2"></i>Volver al Inicio
+                </button>
+                <h1 class="text-3xl font-bold text-center text-gray-800 mb-8"><i class="fas fa-tasks mr-2 text-blue-600"></i>Asignar Áreas de Limpieza Apoyo Cierre</h1>
+
+                <form id="assignAreasForm" class="space-y-6">
+                    <div class="input-group">
+                        <label for="assignReportType"><i class="fas fa-folder-open mr-2 text-gray-600"></i>Tipo de Reporte:</label>
+                        <select id="assignReportType" name="assignReportType" class="rounded-lg" required>
+                            <option value="">Selecciona el tipo de reporte</option>
+                            <option value="Dulcería">Dulcería</option>
+                            <option value="Operaciones">Operaciones</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="assignDate"><i class="fas fa-calendar-alt mr-2 text-gray-600"></i>Fecha:</label>
+                        <input type="date" id="assignDate" name="assignDate" class="rounded-lg" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="assignSupervisorName"><i class="fas fa-user-tie mr-2 text-gray-600"></i>Supervisor Responsable:</label>
+                        <input type="text" id="assignSupervisorName" name="assignSupervisorName" placeholder="Ingrese nombre del supervisor" class="rounded-lg" required>
+                    </div>
+
+                    <h2 class="text-xl font-semibold text-gray-700 mt-8 mb-4"><i class="fas fa-users mr-2 text-gray-700"></i>Responsables de Limpieza Asignados</h2>
+                    <div id="responsibleCleanersContainer" class="space-y-6">
+                        <!-- Dynamic responsible cleaner sections will go here -->
+                    </div>
+                    <button type="button" id="addResponsibleCleanerBtn" class="btn btn-secondary w-full"><i class="fas fa-user-plus mr-2"></i>Añadir Otro Responsable</button>
+
+                    <button type="submit" class="btn btn-primary w-full mt-8"><i class="fab fa-whatsapp mr-2"></i>Enviar Asignación por WhatsApp</button>
+                </form>
+
+                <div id="assignMessageBox" class="message-box mt-4">
+                    <p><i class="fas fa-exclamation-triangle mr-2"></i>Por favor, complete todos los campos requeridos antes de enviar.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pestaña: Actividades Entrega de Turno Administrativos -->
+        <div id="turnoEntregaTab" class="tab-content">
+            <div class="form-section-container">
+                <!-- NEW: Back to Home Button -->
+                <button type="button" class="btn-back-to-home" onclick="showTab('homeTab')">
+                    <i class="fas fa-arrow-left mr-2"></i>Volver al Inicio
+                </button>
+                <h1 class="text-3xl font-bold text-center text-gray-800 mb-8"><i class="fas fa-handshake mr-2 text-blue-600"></i>Actividades Entrega de Turno</h1>
+
+                <form id="turnoEntregaForm" class="space-y-6">
+                    <div class="input-group">
+                        <label for="entregaDate"><i class="fas fa-calendar-alt mr-2 text-gray-600"></i>Fecha:</label>
+                        <input type="date" id="entregaDate" name="entregaDate" class="rounded-lg" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="entregaSupervisorName"><i class="fas fa-user-tie mr-2 text-gray-600"></i>Supervisor Responsable:</label>
+                        <input type="text" id="entregaSupervisorName" name="entregaSupervisorName" placeholder="Ingrese nombre del supervisor" class="rounded-lg" required>
+                    </div>
+
+                    <!-- Sección Actividades Administrativas -->
+                    <h2 class="text-xl font-semibold text-gray-700 mt-8 mb-4"><i class="fas fa-clipboard-list mr-2 text-gray-700"></i>Actividades Administrativas</h2>
+                    <div id="adminActivitiesContainer" class="space-y-4">
+                        <!-- Activities here -->
+                    </div>
+                    <button type="button" id="addAdminActivityBtn" class="btn btn-secondary w-full mt-4"><i class="fas fa-plus-circle mr-2"></i>Añadir Actividad Administrativa Adicional</button>
+                    <div class="input-group mt-6">
+                        <label for="commentsAdmin"><i class="fas fa-comment-dots mr-2 text-gray-600"></i>Comentarios (Actividades Administrativas):</label>
+                        <textarea id="commentsAdmin" name="commentsAdmin" rows="3" placeholder="Observaciones generales para actividades administrativas..." class="rounded-lg"></textarea>
+                    </div>
+
+                    <!-- Sección Dulcería -->
+                    <h2 class="text-xl font-semibold text-gray-700 mt-8 mb-4"><i class="fas fa-candy-cane mr-2 text-gray-700"></i>Dulcería</h2>
+                    <div id="dulceriaActivitiesContainer" class="space-y-4">
+                        <!-- Activities here -->
+                    </div>
+                    <button type="button" id="addDulceriaActivityBtn" class="btn btn-secondary w-full mt-4"><i class="fas fa-plus-circle mr-2"></i>Añadir Actividad de Dulcería Adicional</button>
+                    <div class="input-group mt-6">
+                        <label for="commentsDulceria"><i class="fas fa-comment-dots mr-2 text-gray-600"></i>Comentarios (Dulcería):</label>
+                        <textarea id="commentsDulceria" name="commentsDulceria" rows="3" placeholder="Observaciones generales para dulcería..." class="rounded-lg"></textarea>
+                    </div>
+
+                    <!-- Sección Operaciones -->
+                    <h2 class="text-xl font-semibold text-gray-700 mt-8 mb-4"><i class="fas fa-industry mr-2 text-gray-700"></i>Operaciones</h2>
+                    <div id="operacionesActivitiesContainer" class="space-y-4">
+                        <!-- Activities here -->
+                    </div>
+                    <button type="button" id="addOperacionesActivityBtn" class="btn btn-secondary w-full mt-4"><i class="fas fa-plus-circle mr-2"></i>Añadir Actividad de Operaciones Adicional</button>
+                    <div class="input-group mt-6">
+                        <label for="commentsOperaciones"><i class="fas fa-comment-dots mr-2 text-gray-600"></i>Comentarios (Operaciones):</label>
+                        <textarea id="commentsOperaciones" name="commentsOperaciones" rows="3" placeholder="Observaciones generales para operaciones..." class="rounded-lg"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-full mt-8"><i class="fab fa-whatsapp mr-2"></i>Enviar Reporte de Entrega de Turno por WhatsApp</button>
+                </form>
+
+                <div id="entregaMessageBox" class="message-box mt-4">
+                    <p><i class="fas fa-exclamation-triangle mr-2"></i>Por favor, complete todos los campos requeridos antes de enviar.</p>
+                </div>
+            </div>
+        </div>
+
     </div>
+
+    <script>
+        // --- Tab Logic ---
+        function showTab(tabId) {
+            console.log(`showTab called with tabId: ${tabId}`); // Debugging
+
+            // Remove 'active' from all tab buttons and content
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Add 'active' to the correct tab button and content
+            const activeButton = document.querySelector(`.tab-button[data-tab-id="${tabId}"]`);
+            const activeContent = document.getElementById(tabId);
+
+            if (activeButton) {
+                activeButton.classList.add('active');
+                console.log(`Tab button '${tabId}' activated.`); // Debugging
+            } else {
+                console.error(`ERROR: Tab button not found for: ${tabId}`); // Debugging
+            }
+
+            if (activeContent) {
+                activeContent.classList.add('active');
+                console.log(`Tab content '${tabId}' activated.`); // Debugging
+            } else {
+                console.error(`ERROR: Tab content not found for: ${tabId}`); // Debugging
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("main-report-page.html script loaded."); // Debugging
+
+            // Add event listeners to main navigation tab buttons (top)
+            document.querySelectorAll('.tabs-container .tab-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    showTab(button.dataset.tabId);
+                });
+            });
+
+            // Add event listeners to the buttons within the Home tab
+            document.querySelectorAll('.home-menu-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetTabId = button.dataset.targetTab;
+                    if (targetTabId) {
+                        showTab(targetTabId);
+                    }
+                });
+            });
+
+
+            // Logic to get URL parameter and show the correct tab on load
+            const urlParams = new URLSearchParams(window.location.search);
+            const initialTab = urlParams.get('tab');
+            if (initialTab) {
+                console.log(`Attempting to activate tab from URL: ${initialTab}`); // Debugging
+                showTab(initialTab);
+            } else {
+                // If no URL parameter, show 'homeTab' by default
+                console.log("No 'tab' parameter found in URL. Activating default tab: homeTab."); // Debugging
+                showTab('homeTab');
+            }
+
+
+            // --- Logic for Cleaning Report Form (Tab 1) ---
+            (function() {
+                const cleaningReportForm = document.getElementById('cleaningReportForm');
+                const cleanersContainer = document.getElementById('cleanersContainer');
+                const addCleanerBtn = document.getElementById('addCleanerBtn');
+                const messageBox = document.getElementById('messageBox');
+
+                let cleanerCounter = 0;
+
+                function addCleaningArea(cleanerAreaContainer) {
+                    const areaId = `area_report_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+                    const areaDiv = document.createElement('div');
+                    areaDiv.classList.add('area-item');
+                    areaDiv.dataset.areaId = areaId;
+
+                    areaDiv.innerHTML = `
+                        <input type="text" name="areaName_${areaId}" placeholder="Nombre del Área (Ej: Baños, Cocina)" class="rounded-lg flex-grow" required>
+                        <span class="status-label text-red-500 font-bold" data-status="dirty"><i class="fas fa-times-circle mr-1"></i>SUCIO</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" name="areaStatus_${areaId}">
+                            <span class="slider round"></span>
+                        </label>
+                        <span class="status-label text-green-500 font-bold hidden" data-status="clean"><i class="fas fa-check-circle mr-1"></i>LIMPIO</span>
+                        <button type="button" class="btn btn-danger p-2 rounded-full flex-shrink-0 remove-area-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm6 0a1 1 0 11-2 0v6a1 1 0 112 0V8z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    `;
+                    cleanerAreaContainer.appendChild(areaDiv);
+
+                    const removeBtn = areaDiv.querySelector('.remove-area-btn');
+                    removeBtn.addEventListener('click', () => {
+                        areaDiv.remove();
+                    });
+
+                    const statusCheckbox = areaDiv.querySelector(`input[name="areaStatus_${areaId}"]`);
+                    const dirtyLabel = areaDiv.querySelector('span[data-status="dirty"]');
+                    const cleanLabel = areaDiv.querySelector('span[data-status="clean"]');
+
+                    statusCheckbox.addEventListener('change', (event) => {
+                        if (event.target.checked) {
+                            dirtyLabel.classList.add('hidden');
+                            cleanLabel.classList.remove('hidden');
+                        } else {
+                            dirtyLabel.classList.remove('hidden');
+                            cleanLabel.classList.add('hidden');
+                        }
+                    });
+                }
+
+                function addCleanerSection() {
+                    cleanerCounter++;
+                    const cleanerSectionId = `cleaner_report_${cleanerCounter}`;
+                    const cleanerDiv = document.createElement('div');
+                    cleanerDiv.classList.add('cleaner-section');
+                    cleanerDiv.dataset.cleanerId = cleanerSectionId;
+
+                    cleanerDiv.innerHTML = `
+                        <button type="button" class="remove-cleaner-btn">
+                            <i class="fas fa-times"></i>
+                        </button>
+                        <div class="input-group mb-4">
+                            <label for="cleanerName_${cleanerSectionId}"><i class="fas fa-user mr-2 text-gray-600"></i>Nombre del Encargado de Limpieza:</label>
+                            <input type="text" id="cleanerName_${cleanerSectionId}" name="cleanerName_${cleanerSectionId}" placeholder="Ingrese nombre del encargado" class="rounded-lg" required>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-600 mb-3"><i class="fas fa-tasks mr-2 text-gray-600"></i>Áreas de Limpieza Asignadas:</h3>
+                        <div id="cleaningAreasContainer_${cleanerSectionId}" class="cleaning-areas-container space-y-4">
+                            <!-- Areas for this cleaner will be added dynamically here -->
+                        </div>
+                        <button type="button" class="btn btn-secondary w-full mt-4 add-area-btn"><i class="fas fa-plus-circle mr-2"></i>Añadir Área para este Encargado</button>
+                        <div class="input-group mt-6">
+                            <label for="comments_${cleanerSectionId}"><i class="fas fa-comment-dots mr-2 text-gray-600"></i>Comentarios Adicionales para este Encargado:</label>
+                            <textarea id="comments_${cleanerSectionId}" name="comments_${cleanerSectionId}" rows="3" placeholder="Observaciones específicas para este encargado..." class="rounded-lg"></textarea>
+                        </div>
+                    `;
+                    cleanersContainer.appendChild(cleanerDiv);
+
+                    const removeCleanerBtn = cleanerDiv.querySelector('.remove-cleaner-btn');
+                    removeCleanerBtn.addEventListener('click', () => {
+                        cleanerDiv.remove();
+                    });
+
+                    const addAreaBtnForCleaner = cleanerDiv.querySelector('.add-area-btn');
+                    const cleanerAreaContainer = cleanerDiv.querySelector(`.cleaning-areas-container`);
+
+                    addAreaBtnForCleaner.addEventListener('click', () => {
+                        addCleaningArea(cleanerAreaContainer);
+                    });
+
+                    addCleaningArea(cleanerAreaContainer); // Add initial area
+                }
+
+                addCleanerSection(); // Add initial cleaner section
+
+                addCleanerBtn.addEventListener('click', addCleanerSection);
+
+                cleaningReportForm.addEventListener('submit', (event) => {
+                    event.preventDefault();
+
+                    const reportType = document.getElementById('reportType').value;
+                    const cleaningType = document.getElementById('cleaningType').value;
+                    const reportDate = document.getElementById('reportDate').value;
+                    const supervisorName = document.getElementById('supervisorName').value.trim();
+
+                    if (!reportType || !cleaningType || !reportDate || !supervisorName) {
+                        messageBox.textContent = 'Por favor, complete todos los campos de información general (Tipo de Reporte, Tipo de Limpieza, Fecha, Supervisor).';
+                        messageBox.style.display = 'block';
+                        return;
+                    }
+
+                    const allCleanerSections = cleanersContainer.querySelectorAll('.cleaner-section');
+                    if (allCleanerSections.length === 0) {
+                        messageBox.textContent = 'Debe añadir al menos un encargado de limpieza.';
+                        messageBox.style.display = 'block';
+                        return;
+                    }
+
+                    let allCleanersValid = true;
+                    let allAreasValid = true;
+                    const cleanersData = [];
+
+                    allCleanerSections.forEach(cleanerDiv => {
+                        const cleanerNameInput = cleanerDiv.querySelector('input[type="text"]');
+                        const cleanerName = cleanerNameInput.value.trim();
+                        const commentsInput = cleanerDiv.querySelector('textarea');
+
+                        if (!cleanerName) {
+                            allCleanersValid = false;
+                        }
+
+                        const areasForThisCleaner = [];
+                        const currentCleaningAreasContainer = cleanerDiv.querySelector('.cleaning-areas-container');
+                        const areaItems = currentCleaningAreasContainer.querySelectorAll('.area-item');
+
+                        if (areaItems.length === 0) {
+                            allAreasValid = false;
+                        }
+
+                        areaItems.forEach(areaDiv => {
+                            const areaNameInput = areaDiv.querySelector('input[type="text"]');
+                            const areaStatusCheckbox = areaDiv.querySelector('input[type="checkbox"]');
+
+                            if (!areaNameInput.value.trim()) {
+                                allAreasValid = false;
+                            }
+
+                            areasForThisCleaner.push({
+                                name: areaNameInput.value.trim(),
+                                status: areaStatusCheckbox.checked ? 'LIMPIO' : 'SUCIO'
+                            });
+                        });
+
+                        cleanersData.push({
+                            name: cleanerName,
+                            areas: areasForThisCleaner,
+                            comments: commentsInput.value.trim()
+                        });
+                    });
+
+                    if (!allCleanersValid) {
+                        messageBox.textContent = 'Por favor, ingrese el nombre para todos los encargados de limpieza.';
+                        messageBox.style.display = 'block';
+                        return;
+                    }
+
+                    if (!allAreasValid) {
+                        messageBox.textContent = 'Por favor, ingrese el nombre para todas las áreas de limpieza asignadas a cada encargado.';
+                        messageBox.style.display = 'block';
+                        return;
+                    }
+
+                    messageBox.style.display = 'none';
+
+                    const formData = {
+                        reportType: reportType,
+                        cleaningType: cleaningType,
+                        date: reportDate,
+                        supervisor: supervisorName,
+                        cleaners: cleanersData,
+                    };
+
+                    let whatsappMessage = `*Reporte de Limpieza - ${formData.reportType.replace('Reporte de Limpieza ', '')} (${formData.cleaningType})*\n\n`;
+                    whatsappMessage += `*Fecha:* ${formData.date}\n`;
+                    whatsappMessage += `*Supervisor:* ${formData.supervisor}\n\n`;
+
+                    whatsappMessage += `*Encargados de Limpieza y sus Actividades:*\n`;
+                    formData.cleaners.forEach(cleaner => {
+                        whatsappMessage += `\n*${cleaner.name}:*\n`;
+                        if (cleaner.areas.length > 0) {
+                            cleaner.areas.forEach(area => {
+                                whatsappMessage += `- ${area.name}: *${area.status}*\n`;
+                            });
+                        } else {
+                            whatsappMessage += `  (No se asignaron áreas de limpieza)\n`;
+                        }
+                        if (cleaner.comments) {
+                            whatsappMessage += `  *Comentarios:* ${cleaner.comments}\n`;
+                        }
+                    });
+
+                    const encodedMessage = encodeURIComponent(whatsappMessage);
+                    window.open(`https://wa.me/?text=${encodedMessage}`, '_blank');
+                });
+            })(); // End of Cleaning Report Form logic
+
+            // --- Logic for Area Assignment Form (Tab 2) ---
+            (function() {
+                const assignAreasForm = document.getElementById('assignAreasForm');
+                const responsibleCleanersContainer = document.getElementById('responsibleCleanersContainer');
+                const addResponsibleCleanerBtn = document.getElementById('addResponsibleCleanerBtn');
+                const assignMessageBox = document.getElementById('assignMessageBox');
+
+                let responsibleCleanerCounter = 0;
+
+                // Function to add a new activity within a specific responsible cleaner's section
+                function addAssignedActivity(responsibleCleanerActivitiesContainer) {
+                    const activityId = `activity_assign_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+                    const activityDiv = document.createElement('div');
+                    activityDiv.classList.add('area-item'); // Reusing styling
+                    activityDiv.dataset.activityId = activityId;
+
+                    activityDiv.innerHTML = `
+                        <input type="text" name="activityName_${activityId}" placeholder="Descripción de la actividad" class="rounded-lg flex-grow" required>
+                        <button type="button" class="btn btn-danger p-2 rounded-full flex-shrink-0 remove-activity-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm6 0a1 1 0 11-2 0v6a1 1 0 112 0V8z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    `;
+                    responsibleCleanerActivitiesContainer.appendChild(activityDiv);
+
+                    const removeBtn = activityDiv.querySelector('.remove-activity-btn');
+                    removeBtn.addEventListener('click', () => {
+                        activityDiv.remove();
+                    });
+                }
+
+                // Function to add a new responsible cleaner section
+                function addResponsibleCleanerSection() {
+                    responsibleCleanerCounter++;
+                    const responsibleCleanerSectionId = `responsible_assign_${responsibleCleanerCounter}`;
+                    const responsibleCleanerDiv = document.createElement('div');
+                    responsibleCleanerDiv.classList.add('cleaner-section'); // Reusing styling
+                    responsibleCleanerDiv.dataset.responsibleCleanerId = responsibleCleanerSectionId;
+
+                    responsibleCleanerDiv.innerHTML = `
+                        <button type="button" class="remove-cleaner-btn">
+                            <i class="fas fa-times"></i>
+                        </button>
+                        <div class="input-group mb-4">
+                            <label for="responsibleName_${responsibleCleanerSectionId}"><i class="fas fa-user-hard-hat mr-2 text-gray-600"></i>Nombre del Responsable de Limpieza:</label>
+                            <input type="text" id="responsibleName_${responsibleCleanerSectionId}" name="responsibleName_${responsibleCleanerSectionId}" placeholder="Ingrese nombre del responsable" class="rounded-lg" required>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-600 mb-3"><i class="fas fa-clipboard-check mr-2 text-gray-700"></i>Actividades Asignadas:</h3>
+                        <div id="responsibleActivitiesContainer_${responsibleCleanerSectionId}" class="responsible-activities-container space-y-4">
+                            <!-- Activities for this responsible will be added here dynamically -->
+                        </div>
+                        <button type="button" class="btn btn-secondary w-full mt-4 add-activity-btn-for-responsible"><i class="fas fa-plus-circle mr-2"></i>Añadir Actividad para este Responsable</button>
+                    `;
+                    responsibleCleanersContainer.appendChild(responsibleCleanerDiv);
+
+                    const removeResponsibleBtn = responsibleCleanerDiv.querySelector('.remove-cleaner-btn');
+                    removeResponsibleBtn.addEventListener('click', () => {
+                        responsibleCleanerDiv.remove();
+                    });
+
+                    const addActivityBtnForThisResponsible = responsibleCleanerDiv.querySelector('.add-activity-btn-for-responsible');
+                    const responsibleActivitiesContainer = responsibleCleanerDiv.querySelector(`.responsible-activities-container`);
+
+                    addActivityBtnForThisResponsible.addEventListener('click', () => {
+                        addAssignedActivity(responsibleActivitiesContainer);
+                    });
+
+                    addAssignedActivity(responsibleActivitiesContainer); // Add initial activity
+                }
+
+                addResponsibleCleanerSection(); // Add initial responsible cleaner section
+
+                addResponsibleCleanerBtn.addEventListener('click', addResponsibleCleanerSection);
+
+                assignAreasForm.addEventListener('submit', (event) => {
+                    event.preventDefault();
+
+                    const assignReportType = document.getElementById('assignReportType').value;
+                    const assignDate = document.getElementById('assignDate').value;
+                    const assignSupervisorName = document.getElementById('assignSupervisorName').value.trim();
+
+                    if (!assignReportType || !assignDate || !assignSupervisorName) {
+                        assignMessageBox.textContent = 'Por favor, complete todos los campos principales (Tipo de Reporte, Fecha, Supervisor).';
+                        assignMessageBox.style.display = 'block';
+                        return;
+                    }
+
+                    const allResponsibleCleanerSections = responsibleCleanersContainer.querySelectorAll('.cleaner-section');
+                    if (allResponsibleCleanerSections.length === 0) {
+                        assignMessageBox.textContent = 'Debe añadir al menos un responsable de limpieza.';
+                        assignMessageBox.style.display = 'block';
+                        return;
+                    }
+
+                    let allResponsiblesValid = true;
+                    let allActivitiesValid = true;
+                    const responsiblesData = [];
+
+                    allResponsibleCleanerSections.forEach(responsibleDiv => {
+                        const responsibleNameInput = responsibleDiv.querySelector('input[type="text"]');
+                        const responsibleName = responsibleNameInput.value.trim();
+
+                        if (!responsibleName) {
+                            allResponsiblesValid = false;
+                        }
+
+                        const activitiesForThisResponsible = [];
+                        const currentResponsibleActivitiesContainer = responsibleDiv.querySelector('.responsible-activities-container');
+                        const activityItems = currentResponsibleActivitiesContainer.querySelectorAll('.area-item');
+
+                        if (activityItems.length === 0) {
+                            allActivitiesValid = false;
+                        }
+
+                        areaItems.forEach(activityDiv => {
+                            const activityNameInput = activityDiv.querySelector('input[type="text"]');
+
+                            if (!activityNameInput.value.trim()) {
+                                allActivitiesValid = false;
+                            }
+                            activitiesForThisResponsible.push(activityNameInput.value.trim());
+                        });
+
+                        responsiblesData.push({
+                            name: responsibleName,
+                            activities: activitiesForThisResponsible
+                        });
+                    });
+
+                    if (!allResponsiblesValid) {
+                        assignMessageBox.textContent = 'Por favor, ingrese el nombre para todos los responsables de limpieza.';
+                        assignMessageBox.style.display = 'block';
+                        return;
+                    }
+
+                    if (!allActivitiesValid) {
+                        assignMessageBox.textContent = 'Por favor, ingrese una descripción para todas las actividades asignadas a cada responsable.';
+                        assignMessageBox.style.display = 'block';
+                        return;
+                    }
+
+                    assignMessageBox.style.display = 'none';
+
+                    // Format message for WhatsApp for the assignment
+                    let whatsappMessage = `*Asignación de Áreas de Limpieza - ${assignReportType}*\n\n`;
+                    whatsappMessage += `*Fecha:* ${assignDate}\n`;
+                    whatsappMessage += `*Supervisor Responsable:* ${assignSupervisorName}\n\n`;
+                    whatsappMessage += `*Responsables de Limpieza Asignados y sus Actividades:*\n`;
+
+                    responsiblesData.forEach(responsible => {
+                        whatsappMessage += `\n*${responsible.name}:*\n`;
+                        if (responsible.activities.length > 0) {
+                            responsible.activities.forEach((activity, index) => {
+                                whatsappMessage += `- ${activity}\n`;
+                            });
+                        } else {
+                            whatsappMessage += `  (No se asignaron actividades)\n`;
+                        }
+                    });
+
+                    const encodedMessage = encodeURIComponent(whatsappMessage);
+                    window.open(`https://wa.me/?text=${encodedMessage}`, '_blank');
+                });
+            })(); // End of Area Assignment Form logic
+
+            // --- Logic for Turno Entrega Activities Tab (Tab 3) ---
+            (function() {
+                const turnoEntregaForm = document.getElementById('turnoEntregaForm');
+                const adminActivitiesContainer = document.getElementById('adminActivitiesContainer');
+                const dulceriaActivitiesContainer = document.getElementById('dulceriaActivitiesContainer');
+                const operacionesActivitiesContainer = document.getElementById('operacionesActivitiesContainer');
+                const entregaMessageBox = document.getElementById('entregaMessageBox');
+                const addAdminActivityBtn = document.getElementById('addAdminActivityBtn');
+                const addDulceriaActivityBtn = document.getElementById('addDulceriaActivityBtn');
+                const addOperacionesActivityBtn = document.getElementById('addOperacionesActivityBtn');
+
+                const adminActivitiesList = [
+                    "Stock Ideal",
+                    "Revisar Programacion P&S",
+                    "Toma I",
+                    "Cortes Sorpresa",
+                    "Limpieza de Comedor",
+                    { name: "Bitacora de uniformes", hasSpecificComment: true, specificCommentPlaceholder: "Indicar a quién se realizó y quién queda pendiente" },
+                    { name: "Retiro de fondos", hasSpecificComment: true, specificCommentPlaceholder: "Indicar a quién se realizó y quién queda pendiente" },
+                    "Limpieza Almacen",
+                    "Limpieza Sub Almacen"
+                ];
+
+                const dulceriaActivitiesList = [
+                    "Revisión de limpieza profundas",
+                    "Check List de habilitación",
+                    "Revisar y firmar bitácoras",
+                    "Picado y fechas Dulcería",
+                    "Asignar áreas de abastecimiento dulcería",
+                    "Revisar horarios marquesina",
+                    "Cinepolitos con todos sus insumos (Trapos, atomizador, cajita)"
+                ];
+
+                const operacionesActivitiesList = [
+                    "Revisión de limpieza profundas",
+                    "Abastecimiento Insumos",
+                    "Check List de habilitación",
+                    "Revisión de sanitarios",
+                    "Revisión de cuartos",
+                    "Bitácoras Sanitarios",
+                    "Stock Ideal sanitarios",
+                    "Limpieza de lobby",
+                    "Charolas abastecidas",
+                    "Sinopsis correcta",
+                    "Arquilla ordenada limpia sin boletos",
+                    "Limpieza de unifilas",
+                    "Todos los basureros sin basura con bolsas fajadas",
+                    "Salidas de emergencia Limpias",
+                    "Cinepolitos con todos sus insumos (linterna, trapos, atomizadores, Cepillos)"
+                ];
+
+                function createTurnoActivityItem(activityConfig, containerElement, isPredefined = true) {
+                    const activityName = isPredefined ? (typeof activityConfig === 'object' ? activityConfig.name : activityConfig) : "";
+                    const hasSpecificComment = isPredefined && typeof activityConfig === 'object' && activityConfig !== null && activityConfig.hasSpecificComment;
+                    const specificCommentPlaceholder = hasSpecificComment ? activityConfig.specificCommentPlaceholder : '';
+
+                    const activityId = `entrega_activity_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+                    const activityDiv = document.createElement('div');
+                    activityDiv.classList.add('activity-item-full');
+                    activityDiv.dataset.activityType = isPredefined ? 'predefined' : 'dynamic';
+                    if (isPredefined) {
+                        activityDiv.dataset.activityName = activityName;
+                    }
+
+                    let mainLineContent = `
+                        <label for="activity_${activityId}" class="flex items-center cursor-pointer text-lg font-medium text-gray-700 flex-grow">
+                            <input type="checkbox" id="activity_${activityId}" name="activity_${activityId}" class="mr-3 text-green-500 form-checkbox h-5 w-5 rounded-md border-gray-300 shadow-sm focus:ring-green-500">
+                            ${isPredefined ? `<span class="activity-text">${activityName}</span>` : `<input type="text" name="dynamic_activity_name_${activityId}" placeholder="Nueva actividad" class="rounded-lg flex-grow p-1 border-gray-300 focus:border-blue-500 focus:ring-blue-500" required>`}
+                        </label>
+                        <span class="status-icon ml-3 text-red-500"><i class="fas fa-times-circle"></i></span>
+                    `;
+
+                    if (!isPredefined) {
+                        mainLineContent += `
+                            <button type="button" class="btn btn-danger p-2 rounded-full flex-shrink-0 ml-3 remove-dynamic-activity-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm6 0a1 1 0 11-2 0v6a1 1 0 112 0V8z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        `;
+                    }
+
+                    activityDiv.innerHTML = `
+                        <div class="activity-main-line flex items-center justify-between w-full">
+                            ${mainLineContent}
+                        </div>
+                        <div class="not-done-comment-container w-full mt-2 md:mt-0 md:ml-auto ${isPredefined ? 'hidden' : ''}">
+                            <input type="text" name="not_done_comment_${activityId}" placeholder="Motivo por el que no se realizó" class="rounded-lg w-full p-2 border-gray-300 focus:border-red-500 focus:ring-red-500">
+                        </div>
+                        ${hasSpecificComment ? `
+                        <div class="specific-comment-container w-full mt-2 md:mt-0 md:ml-auto">
+                            <input type="text" name="specific_comment_${activityId}" placeholder="${specificCommentPlaceholder}" class="rounded-lg w-full p-2 border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+                        ` : ''}
+                    `;
+                    containerElement.appendChild(activityDiv);
+
+                    const checkbox = activityDiv.querySelector(`#activity_${activityId}`);
+                    const statusIcon = activityDiv.querySelector('.status-icon');
+                    const notDoneCommentContainer = activityDiv.querySelector('.not-done-comment-container');
+                    const notDoneCommentInput = notDoneCommentContainer.querySelector('input');
+                    const removeBtn = activityDiv.querySelector('.remove-dynamic-activity-btn');
+
+                    if (removeBtn) {
+                        removeBtn.addEventListener('click', () => {
+                            activityDiv.remove();
+                        });
+                    }
+
+                    checkbox.addEventListener('change', () => {
+                        if (checkbox.checked) {
+                            statusIcon.innerHTML = '<i class="fas fa-check-circle"></i>';
+                            statusIcon.classList.remove('text-red-500');
+                            statusIcon.classList.add('text-green-500');
+                            notDoneCommentContainer.classList.add('hidden');
+                            notDoneCommentInput.value = '';
+                        } else {
+                            statusIcon.innerHTML = '<i class="fas fa-times-circle"></i>';
+                            statusIcon.classList.remove('text-green-500');
+                            statusIcon.classList.add('text-red-500');
+                            notDoneCommentContainer.classList.remove('hidden');
+                        }
+                    });
+
+                    if (checkbox.checked) {
+                        statusIcon.innerHTML = '<i class="fas fa-check-circle"></i>';
+                        statusIcon.classList.remove('text-red-500');
+                        statusIcon.classList.add('text-green-500');
+                        notDoneCommentContainer.classList.add('hidden');
+                    } else {
+                        statusIcon.innerHTML = '<i class="fas fa-times-circle"></i>';
+                        statusIcon.classList.remove('text-green-500');
+                        statusIcon.classList.add('text-red-500');
+                        if (!isPredefined) {
+                            notDoneCommentContainer.classList.remove('hidden');
+                        }
+                    }
+                }
+
+                const getSectionActivitiesData = (containerId) => {
+                    const container = document.getElementById(containerId);
+                    const activitiesData = [];
+                    const activityItems = container.querySelectorAll('.activity-item-full');
+
+                    activityItems.forEach((item) => {
+                        const checkbox = item.querySelector('input[type="checkbox"]');
+                        const notDoneCommentInput = item.querySelector('input[name^="not_done_comment_"]');
+                        const specificCommentInput = item.querySelector('input[name^="specific_comment_"]');
+
+                        let activityName;
+                        const dynamicNameInput = item.querySelector('input[name^="dynamic_activity_name_"]');
+                        if (dynamicNameInput) {
+                            activityName = dynamicNameInput.value.trim();
+                        } else {
+                            activityName = item.dataset.activityName;
+                        }
+
+                        activitiesData.push({
+                            name: activityName,
+                            completed: checkbox.checked,
+                            notDoneReason: checkbox.checked ? '' : notDoneCommentInput.value.trim(),
+                            specificComment: specificCommentInput ? specificCommentInput.value.trim() : '',
+                            isDynamic: item.dataset.activityType === 'dynamic'
+                        });
+                    });
+                    return activitiesData;
+                };
+
+
+                adminActivitiesList.forEach(activity => createTurnoActivityItem(activity, adminActivitiesContainer));
+                dulceriaActivitiesList.forEach(activity => createTurnoActivityItem(activity, dulceriaActivitiesContainer));
+                operacionesActivitiesList.forEach(activity => createTurnoActivityItem(activity, operacionesActivitiesContainer));
+
+                addAdminActivityBtn.addEventListener('click', () => {
+                    createTurnoActivityItem(null, adminActivitiesContainer, false);
+                });
+
+                addDulceriaActivityBtn.addEventListener('click', () => {
+                    createTurnoActivityItem(null, dulceriaActivitiesContainer, false);
+                });
+
+                addOperacionesActivityBtn.addEventListener('click', () => {
+                    createTurnoActivityItem(null, operacionesActivitiesContainer, false);
+                });
+
+
+                turnoEntregaForm.addEventListener('submit', (event) => {
+                    event.preventDefault();
+
+                    const entregaDate = document.getElementById('entregaDate').value;
+                    const entregaSupervisorName = document.getElementById('entregaSupervisorName').value.trim();
+
+                    if (!entregaDate || !entregaSupervisorName) {
+                        entregaMessageBox.textContent = 'Por favor, complete los campos de Fecha y Supervisor Responsable.';
+                        entregaMessageBox.style.display = 'block';
+                        return;
+                    }
+
+                    const adminActivitiesData = getSectionActivitiesData('adminActivitiesContainer');
+                    const dulceriaActivitiesData = getSectionActivitiesData('dulceriaActivitiesContainer');
+                    const operacionesActivitiesData = getSectionActivitiesData('operacionesActivitiesContainer');
+
+                    const validateDynamicActivities = (activitiesData, sectionName) => {
+                        const emptyDynamicActivities = activitiesData.filter(activity =>
+                            activity.isDynamic &&
+                            activity.name === '' &&
+                            !activity.completed &&
+                            activity.notDoneReason === ''
+                        );
+                        if (emptyDynamicActivities.length > 0) {
+                            entregaMessageBox.textContent = `Por favor, ingrese un nombre para todas las actividades adicionales de ${sectionName} o indique el motivo por el que no se realizaron.`;
+                            entregaMessageBox.style.display = 'block';
+                            return false;
+                        }
+                        return true;
+                    };
+
+                    if (!validateDynamicActivities(adminActivitiesData, 'Administrativas')) return;
+                    if (!validateDynamicActivities(dulceriaActivitiesData, 'Dulcería')) return;
+                    if (!validateDynamicActivities(operacionesActivitiesData, 'Operaciones')) return;
+
+
+                    const commentsAdmin = document.getElementById('commentsAdmin').value.trim();
+                    const commentsDulceria = document.getElementById('commentsDulceria').value.trim();
+                    const commentsOperaciones = document.getElementById('commentsOperaciones').value.trim();
+
+                    let whatsappMessage = `*Reporte de Entrega de Turno Administrativos*\n\n`;
+                    whatsappMessage += `*Fecha:* ${entregaDate}\n`;
+                    whatsappMessage += `*Supervisor Responsable:* ${entregaSupervisorName}\n\n`;
+
+                    const formatActivitiesForWhatsapp = (activities, sectionTitle) => {
+                        let sectionMessage = `*--- ${sectionTitle} ---*\n`;
+                        if (activities.length > 0) {
+                            activities.forEach(activity => {
+                                sectionMessage += `- ${activity.name}: *${activity.completed ? 'Realizada ✅' : 'No Realizada ❌'}*\n`;
+                                if (!activity.completed && activity.notDoneReason) {
+                                    sectionMessage += `  _Motivo: ${activity.notDoneReason}_\n`;
+                                }
+                                if (activity.specificComment) {
+                                    sectionMessage += `  _Comentario: ${activity.specificComment}_\n`;
+                                }
+                            });
+                        } else {
+                            sectionMessage += `  (No se registraron actividades)\n`;
+                        }
+                        return sectionMessage;
+                    };
+
+
+                    whatsappMessage += formatActivitiesForWhatsapp(adminActivitiesData, 'Actividades Administrativas');
+                    if (commentsAdmin) {
+                        whatsappMessage += `*Comentarios Generales (Admin):* ${commentsAdmin}\n`;
+                    }
+                    whatsappMessage += `\n`;
+
+
+                    whatsappMessage += formatActivitiesForWhatsapp(dulceriaActivitiesData, 'Dulcería');
+                    if (commentsDulceria) {
+                        whatsappMessage += `*Comentarios Generales (Dulcería):* ${commentsDulceria}\n`;
+                    }
+                    whatsappMessage += `\n`;
+
+
+                    whatsappMessage += formatActivitiesForWhatsapp(operacionesActivitiesData, 'Operaciones');
+                    if (commentsOperaciones) {
+                        whatsappMessage += `*Comentarios Generales (Operaciones):* ${commentsOperaciones}\n`;
+                    }
+                    whatsappMessage += `\n`;
+
+                    const encodedMessage = encodeURIComponent(whatsappMessage);
+                    window.open(`https://wa.me/?text=${encodedMessage}`, '_blank');
+                });
+            })(); // End of Turno Entrega Activities Tab logic
+        });
+    </script>
 </body>
 </html>
