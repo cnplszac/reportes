@@ -42,57 +42,19 @@
             transform: translateY(-5px); /* Slight lift on hover */
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25), 0 10px 20px rgba(0, 0, 0, 0.15);
         }
-        .header {
-            text-align: center;
-            margin-bottom: 2.5rem;
-        }
-        .header h1 {
-            font-size: 3.2rem; /* Even larger main title */
-            font-weight: 800;
-            color: #0d47a1; /* Darker blue for main title */
-            text-shadow: 2px 2px 5px rgba(0,0,0,0.15); /* More prominent shadow */
-            margin-bottom: 0.75rem;
-        }
-        .header p {
-            font-size: 1.2rem; /* Slightly larger text */
-            color: #4a5568;
-        }
+        /* REMOVED: .header styles are no longer needed as the header is removed */
+
         .tabs-container {
-            display: flex;
-            border-bottom: 2px solid #e2e8f0;
+            display: none; /* NEW: Hide all tab buttons */
+            border-bottom: 2px solid #e2e8f0; /* Kept for structure, but not visible */
             margin-bottom: 2rem;
-            overflow-x: auto; /* Allow horizontal scrolling for tabs on small screens */
-            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-            justify-content: center; /* Center tabs */
-            gap: 1rem; /* Space between tabs */
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            justify-content: center;
+            gap: 1rem;
         }
-        .tab-button {
-            padding: 0.8rem 1.8rem; /* Increased padding */
-            font-weight: 700;
-            color: #64748b;
-            cursor: pointer;
-            border-bottom: 3px solid transparent; /* Thicker transparent border */
-            transition: all 0.3s ease-in-out;
-            white-space: nowrap; /* Prevent tab text from wrapping */
-            background-color: transparent;
-            border-top-left-radius: 0.6rem;
-            border-top-right-radius: 0.6rem;
-            position: relative;
-        }
-        .tab-button:hover {
-            color: #1976d2; /* Darker blue on hover */
-            background-color: #e0f2f7; /* Lighter blue on hover */
-            border-bottom-color: #3f51b5; /* Highlight border on hover */
-            transform: translateY(-2px); /* Slight lift on hover */
-        }
-        .tab-button.active {
-            color: #1976d2; /* Darker blue when active */
-            border-bottom: 4px solid #1976d2; /* Even thicker border for active */
-            background-color: #e6f3fb; /* More distinct light blue background */
-            font-weight: 800; /* Make active tab text bolder */
-            box-shadow: 0 -4px 10px rgba(0,0,0,0.1); /* Stronger shadow on active tab */
-            transform: translateY(-3px); /* More noticeable lift on active */
-        }
+        /* .tab-button and .tab-button.active styles remain for internal JS logic, but are not displayed */
+
         .tab-content {
             display: none; /* Hide all tab content by default */
             padding: 1.5rem 0; /* Padding for content */
@@ -102,7 +64,7 @@
         }
 
         /* --- Common Styles for all forms within tabs --- */
-        .form-section-container { /* Renamed from cleaning-report-section to be more generic */
+        .form-section-container {
             background-color: #ffffff;
             padding: 2.5rem;
             border-radius: 1.5rem;
@@ -110,7 +72,7 @@
             width: 100%;
             border: 1px solid #e2e8f0;
         }
-        .form-section-container h1 { /* Adjusted title for embedded forms */
+        .form-section-container h1 {
             font-size: 2.5rem;
             font-weight: 700;
             color: #2c3e50;
@@ -193,7 +155,7 @@
             box-shadow: 0 8px 20px rgba(211, 47, 47, 0.5);
             transform: translateY(-3px);
         }
-        /* New style for the back button */
+        /* Style for the back button */
         .btn-back-to-home {
             background: linear-gradient(45deg, #607d8b, #455a64); /* Grayish-blue for subtle return */
             color: white;
@@ -213,7 +175,7 @@
             box-shadow: 0 6px 12px rgba(0,0,0,0.15);
             transform: translateY(-2px);
         }
-        .cleaner-section { /* Also used for responsible cleaner sections in assignment form */
+        .cleaner-section {
             background-color: #f8faff;
             border: 1px solid #c7e7f6;
             border-radius: 1.2rem;
@@ -248,7 +210,7 @@
             transform: scale(1.15);
             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.35);
         }
-        .area-item { /* Also used for activities in assignment form */
+        .area-item {
             display: flex;
             align-items: center;
             gap: 1.25rem;
@@ -416,12 +378,7 @@
             .main-container {
                 padding: 1.5rem;
             }
-            .header h1 {
-                font-size: 2.2rem;
-            }
-            .header p {
-                font-size: 1rem;
-            }
+            /* REMOVED: .header h1 and .header p styles here */
             .form-section-container h1 {
                 font-size: 1.8rem;
             }
@@ -459,7 +416,7 @@
             }
         }
 
-        /* NEW: Styles for the Home/Dashboard tab (merged and adapted from main-menu-page) */
+        /* Styles for the Home/Dashboard tab */
         .home-tab-content {
             padding: 2.5rem; /* Adjusted padding */
             text-align: center;
@@ -562,11 +519,13 @@
 </head>
 <body>
     <div class="main-container">
-        <header class="header">
+        <!-- REMOVED: Header section with main title and description -->
+        <!-- <header class="header">
             <h1><i class="fas fa-tasks mr-3 text-blue-700"></i>Panel de Control de Actividades</h1>
             <p>Genera y envía tus reportes y asignaciones de limpieza fácilmente.</p>
-        </header>
+        </header> -->
 
+        <!-- REMOVED: Tab buttons are now hidden via CSS display: none -->
         <div class="tabs-container">
             <button class="tab-button active" data-tab-id="homeTab">Inicio</button>
             <button class="tab-button" data-tab-id="cleaningReportTab">Reporte de Limpieza</button>
@@ -574,7 +533,7 @@
             <button class="tab-button" data-tab-id="turnoEntregaTab">Actividades Entrega de Turno</button>
         </div>
 
-        <!-- NEW: Pestaña de Inicio/Dashboard -->
+        <!-- Pestaña de Inicio/Dashboard -->
         <div id="homeTab" class="tab-content active">
             <div class="home-tab-content">
                 <h1><i class="fas fa-cubes mr-4"></i>Gestión Integral de Operaciones</h1>
@@ -600,7 +559,7 @@
         <!-- Pestaña: Reporte de Limpieza -->
         <div id="cleaningReportTab" class="tab-content">
             <div class="form-section-container">
-                <!-- NEW: Back to Home Button -->
+                <!-- Back to Home Button -->
                 <button type="button" class="btn-back-to-home" onclick="showTab('homeTab')">
                     <i class="fas fa-arrow-left mr-2"></i>Volver al Inicio
                 </button>
@@ -657,7 +616,7 @@
         <!-- Pestaña: Asignar Áreas de Limpieza Apoyo Cierre -->
         <div id="assignAreasTab" class="tab-content">
             <div class="form-section-container">
-                <!-- NEW: Back to Home Button -->
+                <!-- Back to Home Button -->
                 <button type="button" class="btn-back-to-home" onclick="showTab('homeTab')">
                     <i class="fas fa-arrow-left mr-2"></i>Volver al Inicio
                 </button>
@@ -701,7 +660,7 @@
         <!-- Pestaña: Actividades Entrega de Turno Administrativos -->
         <div id="turnoEntregaTab" class="tab-content">
             <div class="form-section-container">
-                <!-- NEW: Back to Home Button -->
+                <!-- Back to Home Button -->
                 <button type="button" class="btn-back-to-home" onclick="showTab('homeTab')">
                     <i class="fas fa-arrow-left mr-2"></i>Volver al Inicio
                 </button>
@@ -797,7 +756,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             console.log("main-report-page.html script loaded."); // Debugging
 
-            // Add event listeners to main navigation tab buttons (top)
+            // Add event listeners to main navigation tab buttons (top) - though hidden, they still handle clicks if exposed
             document.querySelectorAll('.tabs-container .tab-button').forEach(button => {
                 button.addEventListener('click', () => {
                     showTab(button.dataset.tabId);
