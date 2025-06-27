@@ -1813,89 +1813,6 @@
                     }
                 }
 
-                // Function to download PDF
-                function descargarPDF() {
-                    const { jsPDF } = window.jspdf;
-                    const doc = new jsPDF();
-                    
-                    const quienReporta = document.getElementById("quienReporta").value;
-                    const nombre = document.getElementById("nombre").value;
-                    const fecha = document.getElementById("fecha").value;
-                    const descripcion = document.getElementById("descripcion").value;
-                    
-                    let yPos = 20;
-
-                    doc.setFontSize(18);
-                    doc.text("Reporte de Trabajo", 20, yPos);
-                    yPos += 10;
-                    
-                    doc.setFontSize(12);
-                    doc.text(`Quien Reporta: ${quienReporta}`, 20, yPos);
-                    yPos += 10;
-                    doc.text(`Nombre del Empleado: ${nombre}`, 20, yPos);
-                    yPos += 10;
-                    doc.text(`Fecha y Hora: ${fecha}`, 20, yPos);
-                    yPos += 10;
-                    doc.text(`Descripción del Trabajo:`, 20, yPos);
-                    yPos += 10;
-                    const splitDescription = doc.splitTextToSize(descripcion, 170);
-                    doc.text(splitDescription, 20, yPos);
-                    yPos += (splitDescription.length * 7) + 10; // Adjust Y position based on description length
-                    
-                    function agregarFirma(canvasId, title) {
-                        if (yPos > 240) { // Check if new page is needed for signatures
-                            doc.addPage();
-                            yPos = 20;
-                        }
-                        doc.text(`${title}:`, 20, yPos);
-                        const canvas = document.getElementById(canvasId);
-                        if (canvas && canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data.some(channel => channel !== 0)) { // Check if canvas is not empty
-                            const imgData = canvas.toDataURL("image/png");
-                            doc.addImage(imgData, "PNG", 20, yPos + 10, 80, 30); // Image size adjusted
-                            yPos += 45; // Space for signature and next text
-                        } else {
-                            doc.text("No se proporcionó firma.", 20, yPos + 10);
-                            yPos += 20;
-                        }
-                    }
-                    
-                    agregarFirma("firmaSupervisor", "Firma del Jefe Inmediato");
-                    agregarFirma("firmaEmpleado", "Firma del Empleado");
-                    
-                    const testigoSelect = document.getElementById("testigoSelect").value;
-                    if (testigoSelect === "si") {
-                        const nombreTestigo = document.getElementById("nombreTestigo").value;
-                        if (yPos > 240) { // Check if new page is needed for witness
-                            doc.addPage();
-                            yPos = 20;
-                        }
-                        doc.text(`Nombre del Testigo: ${nombreTestigo}`, 20, yPos);
-                        yPos += 10;
-                        agregarFirma("firmaTestigo", "Firma del Testigo");
-                    }
-                    
-                    const evidencias = document.getElementById("evidenciasContainer").getElementsByTagName("img");
-                    if (evidencias.length > 0) {
-                        if (yPos > 200) { // Start images on a new page if not enough space
-                            doc.addPage();
-                            yPos = 20;
-                        }
-                        doc.text("Evidencia Fotográfica:", 20, yPos);
-                        yPos += 10;
-                        Array.from(evidencias).forEach((img, index) => {
-                            const imgData = img.src;
-                            if (yPos + 55 > doc.internal.pageSize.height) { // Check if current image fits
-                                doc.addPage();
-                                yPos = 20; // Reset Y for new page
-                            }
-                            doc.addImage(imgData, "PNG", 20, yPos, 50, 50); // Small size for evidence
-                            yPos += 55; // Space after each image
-                        });
-                    }
-                    
-                    doc.save("reporte_trabajo.pdf");
-                }
-
                 // Attach event listeners and initial calls for the Notifications tab elements
                 document.getElementById("descripcion").addEventListener('input', function() { ajustarAltura(this); });
                 document.getElementById("evidencia").addEventListener('change', cargarEvidencia);
@@ -1916,6 +1833,89 @@
             }
             // End of Notifications Tab (Reporte de Trabajo) Logic
         });
+
+        // Function to download PDF - Moved to global scope
+        function descargarPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            const quienReporta = document.getElementById("quienReporta").value;
+            const nombre = document.getElementById("nombre").value;
+            const fecha = document.getElementById("fecha").value;
+            const descripcion = document.getElementById("descripcion").value;
+            
+            let yPos = 20;
+
+            doc.setFontSize(18);
+            doc.text("Reporte de Trabajo", 20, yPos);
+            yPos += 10;
+            
+            doc.setFontSize(12);
+            doc.text(`Quien Reporta: ${quienReporta}`, 20, yPos);
+            yPos += 10;
+            doc.text(`Nombre del Empleado: ${nombre}`, 20, yPos);
+            yPos += 10;
+            doc.text(`Fecha y Hora: ${fecha}`, 20, yPos);
+            yPos += 10;
+            doc.text(`Descripción del Trabajo:`, 20, yPos);
+            yPos += 10;
+            const splitDescription = doc.splitTextToSize(descripcion, 170);
+            doc.text(splitDescription, 20, yPos);
+            yPos += (splitDescription.length * 7) + 10; // Adjust Y position based on description length
+            
+            function agregarFirma(canvasId, title) {
+                if (yPos > 240) { // Check if new page is needed for signatures
+                    doc.addPage();
+                    yPos = 20;
+                }
+                doc.text(`${title}:`, 20, yPos);
+                const canvas = document.getElementById(canvasId);
+                if (canvas && canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data.some(channel => channel !== 0)) { // Check if canvas is not empty
+                    const imgData = canvas.toDataURL("image/png");
+                    doc.addImage(imgData, "PNG", 20, yPos + 10, 80, 30); // Image size adjusted
+                    yPos += 45; // Space for signature and next text
+                } else {
+                    doc.text("No se proporcionó firma.", 20, yPos + 10);
+                    yPos += 20;
+                }
+            }
+            
+            agregarFirma("firmaSupervisor", "Firma del Jefe Inmediato");
+            agregarFirma("firmaEmpleado", "Firma del Empleado");
+            
+            const testigoSelect = document.getElementById("testigoSelect").value;
+            if (testigoSelect === "si") {
+                const nombreTestigo = document.getElementById("nombreTestigo").value;
+                if (yPos > 240) { // Check if new page is needed for witness
+                    doc.addPage();
+                    yPos = 20;
+                }
+                doc.text(`Nombre del Testigo: ${nombreTestigo}`, 20, yPos);
+                yPos += 10;
+                agregarFirma("firmaTestigo", "Firma del Testigo");
+            }
+            
+            const evidencias = document.getElementById("evidenciasContainer").getElementsByTagName("img");
+            if (evidencias.length > 0) {
+                if (yPos > 200) { // Start images on a new page if not enough space
+                    doc.addPage();
+                    yPos = 20;
+                }
+                doc.text("Evidencia Fotográfica:", 20, yPos);
+                yPos += 10;
+                Array.from(evidencias).forEach((img, index) => {
+                    const imgData = img.src;
+                    if (yPos + 55 > doc.internal.pageSize.height) { // Check if current image fits
+                        doc.addPage();
+                        yPos = 20; // Reset Y for new page
+                    }
+                    doc.addImage(imgData, "PNG", 20, yPos, 50, 50); // Small size for evidence
+                    yPos += 55; // Space after each image
+                });
+            }
+            
+            doc.save("reporte_trabajo.pdf");
+        }
     </script>
 </body>
 </html>
