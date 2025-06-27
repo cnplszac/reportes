@@ -1692,8 +1692,9 @@
 
                     // Set canvas dimensions dynamically to be responsive
                     // Aspect ratio (width / height). Smaller number means taller canvas.
-                    // 3:1 (width:height) was too short. Try 2.5:1 for more height.
-                    const aspectRatio = 2.5; // NEW: Adjusted aspect ratio
+                    // From 3:1 (width:height) to 2.5:1 was some increase.
+                    // Now for double height, it should be 2.5 / 2 = 1.25
+                    const aspectRatio = 1.25; // NEW: Adjusted aspect ratio to make it twice as tall
                     canvas.width = canvas.offsetWidth; // Set internal drawing buffer width to actual rendered width
                     canvas.height = canvas.width / aspectRatio; // Maintain aspect ratio
 
