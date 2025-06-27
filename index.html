@@ -517,6 +517,133 @@
                 margin-bottom: 0.6rem;
             }
         }
+
+        /* NEW STYLES FOR NOTIFICATIONS TAB SINGLE WHITE BOX */
+        #notificationsTab .reporte-trabajo-content-wrapper {
+            background: linear-gradient(135deg, #f0f4f8 0%, #ffffff 100%); /* Soft gradient like main-container */
+            padding: 2.5rem; /* Consistent padding */
+            border-radius: 1.5rem; /* Consistent border radius */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05), 0 4px 10px rgba(0, 0, 0, 0.03); /* Consistent shadow */
+            width: 100%;
+            max-width: 800px; /* INCREASED MAX-WIDTH for wider appearance */
+            margin: 0 auto; /* Center the form container */
+            border: 1px solid #e2e8f0; /* Consistent border */
+            color: #334155; /* Ensure text color is readable against white */
+        }
+        #notificationsTab .reporte-trabajo-content-wrapper h1 {
+            font-size: 2rem; /* Adjusted for sub-section */
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.05);
+        }
+        #notificationsTab .reporte-trabajo-content-wrapper h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #4a5568;
+            margin-top: 1.5rem;
+            margin-bottom: 0.8rem;
+        }
+        #notificationsTab .reporte-trabajo-content-wrapper label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: block;
+            color: #4a5568;
+            font-size: 0.95rem;
+            text-align: left; /* Align labels to left */
+        }
+        #notificationsTab .reporte-trabajo-content-wrapper input,
+        #notificationsTab .reporte-trabajo-content-wrapper textarea,
+        #notificationsTab .reporte-trabajo-content-wrapper select {
+            width: 100%;
+            padding: 0.8rem;
+            margin: 0.5rem 0 1rem 0; /* Adjusted margin for spacing */
+            border: 1px solid #c0d4e7;
+            border-radius: 0.8rem; /* Consistent border radius */
+            font-size: 1rem;
+            color: #2d3748;
+            resize: vertical; /* Allow vertical resizing for textarea */
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.08);
+        }
+        #notificationsTab .reporte-trabajo-content-wrapper textarea {
+             min-height: 100px;
+        }
+        #notificationsTab .reporte-trabajo-content-wrapper input:focus,
+        #notificationsTab .reporte-trabajo-content-wrapper textarea:focus,
+        #notificationsTab .reporte-trabajo-content-wrapper select:focus {
+            outline: none;
+            border-color: #3f51b5;
+            box-shadow: 0 0 0 4px rgba(63, 81, 181, 0.3), inset 0 2px 5px rgba(0, 0, 0, 0.1);
+            background-color: #f0f8ff;
+        }
+        #notificationsTab .reporte-trabajo-content-wrapper button {
+            padding: 0.8rem 1.8rem;
+            font-size: 1rem;
+            margin: 1rem 0.5rem; /* Adjusted margin for buttons */
+            cursor: pointer;
+            background: linear-gradient(45deg, #1e88e5, #42a5f5); /* Blue gradient for consistency */
+            color: white;
+            border: none;
+            border-radius: 0.85rem; /* Consistent border radius */
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+        #notificationsTab .reporte-trabajo-content-wrapper button:hover {
+            background: linear-gradient(45deg, #1565c0, #1976d2);
+            box-shadow: 0 8px 20px rgba(25, 118, 210, 0.5);
+            transform: translateY(-2px);
+        }
+        #notificationsTab .reporte-trabajo-content-wrapper canvas {
+            border: 2px solid #e2e8f0; /* Soft border */
+            background: #ffffff;
+            touch-action: none;
+            border-radius: 0.8rem; /* Consistent border radius */
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.08);
+            margin-top: 0.5rem;
+            display: block; /* Ensures it takes full width and centers */
+            margin-left: auto;
+            margin-right: auto;
+            /* NEW: Make canvas itself responsive */
+            width: 100%; /* Take 100% of parent's width */
+            height: auto; /* Maintain aspect ratio */
+            max-width: 100%; /* Ensure it doesn't exceed its container */
+        }
+        #notificationsTab .reporte-trabajo-content-wrapper .hidden {
+            display: none !important; /* Use !important to override potential inline styles */
+        }
+        #notificationsTab .reporte-trabajo-content-wrapper .evidencia {
+            margin-top: 1.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center; /* Center images */
+            gap: 10px; /* Space between images */
+        }
+        #notificationsTab .reporte-trabajo-content-wrapper .evidencia img {
+            width: calc(33% - 10px); /* 3 images per row, with gap */
+            max-width: 150px; /* Max size for individual images */
+            height: auto;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            object-fit: cover; /* Ensures images cover area without distortion */
+        }
+        @media (max-width: 480px) {
+            #notificationsTab .reporte-trabajo-content-wrapper {
+                padding: 1.5rem;
+            }
+            #notificationsTab .reporte-trabajo-content-wrapper h1 {
+                font-size: 1.5rem;
+            }
+            #notificationsTab .reporte-trabajo-content-wrapper button {
+                width: 100%;
+                margin-left: 0;
+                margin-right: 0;
+            }
+            #notificationsTab .reporte-trabajo-content-wrapper .evidencia img {
+                width: calc(50% - 10px); /* 2 images per row on small screens */
+            }
+        }
     </style>
 </head>
 <body>
@@ -728,183 +855,52 @@
 
         <!-- NEW TAB: Notificaciones con Reporte de Trabajo -->
         <div id="notificationsTab" class="tab-content">
-            <div class="form-section-container">
+            <div class="reporte-trabajo-content-wrapper"> <!-- This is now the single white box -->
                 <!-- Back to Home Button -->
                 <button type="button" class="btn-back-to-home" onclick="showTab('homeTab')">
                     <i class="fas fa-arrow-left mr-2"></i>Volver al Inicio
                 </button>
                 <h1 class="text-3xl font-bold text-center text-gray-800 mb-8"><i class="fas fa-bell mr-2 text-blue-600"></i>Notificaciones</h1>
 
-                <div class="sub-form-container">
-                    <!-- Styles specific to this section to avoid conflicts -->
-                    <style>
-                        #notificationsTab .sub-form-container {
-                            background: rgba(255, 255, 255, 0.9); /* Slightly more opaque white background */
-                            padding: 2.5rem; /* Consistent padding */
-                            border-radius: 1.5rem; /* Consistent border radius */
-                            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05), 0 4px 10px rgba(0, 0, 0, 0.03); /* Consistent shadow */
-                            width: 100%;
-                            max-width: 800px; /* INCREASED MAX-WIDTH for wider appearance */
-                            margin: 0 auto; /* Center the form container */
-                            /* REMOVED: overflow-y: auto; and max-height: calc(100vh - 100px); to avoid double scrollbars */
-                            color: #334155; /* Ensure text color is readable against white */
-                        }
-                        #notificationsTab .sub-form-container h1 {
-                            font-size: 2rem; /* Adjusted for sub-section */
-                            font-weight: 700;
-                            color: #2c3e50;
-                            margin-bottom: 1.5rem;
-                            text-shadow: 1px 1px 3px rgba(0,0,0,0.05);
-                        }
-                        #notificationsTab .sub-form-container h3 {
-                            font-size: 1.2rem;
-                            font-weight: 600;
-                            color: #4a5568;
-                            margin-top: 1.5rem;
-                            margin-bottom: 0.8rem;
-                        }
-                        #notificationsTab .sub-form-container label {
-                            font-weight: 600;
-                            margin-bottom: 0.5rem;
-                            display: block;
-                            color: #4a5568;
-                            font-size: 0.95rem;
-                            text-align: left; /* Align labels to left */
-                        }
-                        #notificationsTab .sub-form-container input,
-                        #notificationsTab .sub-form-container textarea,
-                        #notificationsTab .sub-form-container select {
-                            width: 100%;
-                            padding: 0.8rem;
-                            margin: 0.5rem 0 1rem 0; /* Adjusted margin for spacing */
-                            border: 1px solid #c0d4e7;
-                            border-radius: 0.8rem; /* Consistent border radius */
-                            font-size: 1rem;
-                            color: #2d3748;
-                            resize: vertical; /* Allow vertical resizing for textarea */
-                            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.08);
-                        }
-                        #notificationsTab .sub-form-container textarea {
-                             min-height: 100px;
-                        }
-                        #notificationsTab .sub-form-container input:focus,
-                        #notificationsTab .sub-form-container textarea:focus,
-                        #notificationsTab .sub-form-container select:focus {
-                            outline: none;
-                            border-color: #3f51b5;
-                            box-shadow: 0 0 0 4px rgba(63, 81, 181, 0.3), inset 0 2px 5px rgba(0, 0, 0, 0.1);
-                            background-color: #f0f8ff;
-                        }
-                        #notificationsTab .sub-form-container button {
-                            padding: 0.8rem 1.8rem;
-                            font-size: 1rem;
-                            margin: 1rem 0.5rem; /* Adjusted margin for buttons */
-                            cursor: pointer;
-                            background: linear-gradient(45deg, #1e88e5, #42a5f5); /* Blue gradient for consistency */
-                            color: white;
-                            border: none;
-                            border-radius: 0.85rem; /* Consistent border radius */
-                            transition: all 0.3s ease-in-out;
-                            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
-                            text-transform: uppercase;
-                            letter-spacing: 0.03em;
-                        }
-                        #notificationsTab .sub-form-container button:hover {
-                            background: linear-gradient(45deg, #1565c0, #1976d2);
-                            box-shadow: 0 8px 20px rgba(25, 118, 210, 0.5);
-                            transform: translateY(-2px);
-                        }
-                        #notificationsTab .sub-form-container canvas {
-                            border: 2px solid #e2e8f0; /* Soft border */
-                            background: #ffffff;
-                            touch-action: none;
-                            border-radius: 0.8rem; /* Consistent border radius */
-                            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.08);
-                            margin-top: 0.5rem;
-                            display: block; /* Ensures it takes full width and centers */
-                            margin-left: auto;
-                            margin-right: auto;
-                            /* NEW: Make canvas itself responsive */
-                            width: 100%; /* Take 100% of parent's width */
-                            height: auto; /* Maintain aspect ratio */
-                            max-width: 100%; /* Ensure it doesn't exceed its container */
-                        }
-                        #notificationsTab .sub-form-container .hidden {
-                            display: none !important; /* Use !important to override potential inline styles */
-                        }
-                        #notificationsTab .sub-form-container .evidencia {
-                            margin-top: 1.5rem;
-                            display: flex;
-                            flex-wrap: wrap;
-                            justify-content: center; /* Center images */
-                            gap: 10px; /* Space between images */
-                        }
-                        #notificationsTab .sub-form-container .evidencia img {
-                            width: calc(33% - 10px); /* 3 images per row, with gap */
-                            max-width: 150px; /* Max size for individual images */
-                            height: auto;
-                            border-radius: 0.5rem;
-                            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-                            object-fit: cover; /* Ensures images cover area without distortion */
-                        }
-                        @media (max-width: 480px) {
-                            #notificationsTab .sub-form-container {
-                                padding: 1.5rem;
-                            }
-                            #notificationsTab .sub-form-container h1 {
-                                font-size: 1.5rem;
-                            }
-                            #notificationsTab .sub-form-container button {
-                                width: 100%;
-                                margin-left: 0;
-                                margin-right: 0;
-                            }
-                            #notificationsTab .sub-form-container .evidencia img {
-                                width: calc(50% - 10px); /* 2 images per row on small screens */
-                            }
-                        }
-                    </style>
+                <h1>Reporte de Trabajo</h1>
+                <label for="quienReporta">Nombre de quien reporta:</label>
+                <input type="text" id="quienReporta" placeholder="Ingrese nombre quien reporta">
+                
+                <label for="nombre">Nombre del empleado:</label>
+                <input type="text" id="nombre" placeholder="Ingrese nombre del empleado">
+                
+                <label for="fecha">Fecha y Hora:</label>
+                <input type="datetime-local" id="fecha">
+                
+                <label for="descripcion">Descripción del trabajo:</label>
+                <textarea id="descripcion" placeholder="Ingrese detalles" oninput="ajustarAltura(this)"></textarea>
+                
+                <h3>Firma del Jefe Inmediato</h3>
+                <canvas id="firmaSupervisor"></canvas>
+                <button type="button" id="limpiarFirmaSupervisor">Limpiar Firma</button>
+                
+                <h3>Firma del Empleado</h3>
+                <canvas id="firmaEmpleado"></canvas>
+                <button type="button" id="limpiarFirmaEmpleado">Limpiar Firma</button>
 
-                    <h1>Reporte de Trabajo</h1>
-                    <label for="quienReporta">Nombre de quien reporta:</label>
-                    <input type="text" id="quienReporta" placeholder="Ingrese nombre quien reporta">
-                    
-                    <label for="nombre">Nombre del empleado:</label>
-                    <input type="text" id="nombre" placeholder="Ingrese nombre del empleado">
-                    
-                    <label for="fecha">Fecha y Hora:</label>
-                    <input type="datetime-local" id="fecha">
-                    
-                    <label for="descripcion">Descripción del trabajo:</label>
-                    <textarea id="descripcion" placeholder="Ingrese detalles" oninput="ajustarAltura(this)"></textarea>
-                    
-                    <h3>Firma del Jefe Inmediato</h3>
-                    <canvas id="firmaSupervisor"></canvas> <!-- Removed fixed width/height -->
-                    <button type="button" id="limpiarFirmaSupervisor">Limpiar Firma</button>
-                    
-                    <h3>Firma del Empleado</h3>
-                    <canvas id="firmaEmpleado"></canvas> <!-- Removed fixed width/height -->
-                    <button type="button" id="limpiarFirmaEmpleado">Limpiar Firma</button>
-
-                    <label for="testigoSelect">¿Hay testigo en el reporte?</label>
-                    <select id="testigoSelect">
-                        <option value="no">No</option>
-                        <option value="si">Sí</option>
-                    </select>
-                    <div id="testigoContainer" class="hidden">
-                        <label for="nombreTestigo">Nombre del Testigo:</label>
-                        <input type="text" id="nombreTestigo" placeholder="Ingrese nombre del testigo">
-                        <h3>Firma del Testigo</h3>
-                        <canvas id="firmaTestigo"></canvas> <!-- Removed fixed width/height -->
-                        <button type="button" id="limpiarFirmaTestigo" class="hidden">Limpiar Firma</button>
-                    </div>
-                    
-                    <h3>Agregar evidencia (Máximo 3 imágenes)</h3>
-                    <input type="file" id="evidencia" accept="image/*" multiple>
-                    <div class="evidencia" id="evidenciasContainer"></div>
-                    
-                    <button type="button" onclick="descargarPDF()">Descargar Reporte</button>
+                <label for="testigoSelect">¿Hay testigo en el reporte?</label>
+                <select id="testigoSelect">
+                    <option value="no">No</option>
+                    <option value="si">Sí</option>
+                </select>
+                <div id="testigoContainer" class="hidden">
+                    <label for="nombreTestigo">Nombre del Testigo:</label>
+                    <input type="text" id="nombreTestigo" placeholder="Ingrese nombre del testigo">
+                    <h3>Firma del Testigo</h3>
+                    <canvas id="firmaTestigo"></canvas>
+                    <button type="button" id="limpiarFirmaTestigo" class="hidden">Limpiar Firma</button>
                 </div>
+                
+                <h3>Agregar evidencia (Máximo 3 imágenes)</h3>
+                <input type="file" id="evidencia" accept="image/*" multiple>
+                <div class="evidencia" id="evidenciasContainer"></div>
+                
+                <button type="button" onclick="descargarPDF()">Descargar Reporte</button>
             </div>
         </div>
     </div>
@@ -1694,7 +1690,7 @@
                     // Aspect ratio (width / height). Smaller number means taller canvas.
                     // From 3:1 (width:height) to 2.5:1 was some increase.
                     // Now for double height, it should be 2.5 / 2 = 1.25
-                    const aspectRatio = 1.25; // NEW: Adjusted aspect ratio to make it twice as tall
+                    const aspectRatio = 1.25; // Adjusted aspect ratio to make it twice as tall
                     canvas.width = canvas.offsetWidth; // Set internal drawing buffer width to actual rendered width
                     canvas.height = canvas.width / aspectRatio; // Maintain aspect ratio
 
