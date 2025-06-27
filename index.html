@@ -744,7 +744,7 @@
                             border-radius: 1.5rem; /* Consistent border radius */
                             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05), 0 4px 10px rgba(0, 0, 0, 0.03); /* Consistent shadow */
                             width: 100%;
-                            max-width: 600px; /* Limits width for content readability */
+                            max-width: 800px; /* INCREASED MAX-WIDTH for wider appearance */
                             margin: 0 auto; /* Center the form container */
                             overflow-y: auto; /* Allows scrolling within this sub-container */
                             max-height: calc(100vh - 100px); /* Adjust max-height to fit viewport */
@@ -1330,14 +1330,12 @@
                     if (!allResponsiblesValid) {
                         assignMessageBox.textContent = 'Por favor, ingrese el nombre para todos los responsables de limpieza.';
                         assignMessageBox.style.display = 'block';
-                        console.log("Validation failed: Responsible cleaner name missing in Assign Areas."); // Debugging
                         return;
                     }
 
                     if (!allActivitiesValid) {
                         assignMessageBox.textContent = 'Por favor, ingrese una descripción para todas las actividades asignadas a cada responsable.';
                         assignMessageBox.style.display = 'block';
-                        console.log("Validation failed: Activity description missing in Assign Areas."); // Debugging
                         return;
                     }
 
