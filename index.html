@@ -746,8 +746,7 @@
                             width: 100%;
                             max-width: 800px; /* INCREASED MAX-WIDTH for wider appearance */
                             margin: 0 auto; /* Center the form container */
-                            overflow-y: auto; /* Allows scrolling within this sub-container */
-                            max-height: calc(100vh - 100px); /* Adjust max-height to fit viewport */
+                            /* REMOVED: overflow-y: auto; and max-height: calc(100vh - 100px); to avoid double scrollbars */
                             color: #334155; /* Ensure text color is readable against white */
                         }
                         #notificationsTab .sub-form-container h1 {
