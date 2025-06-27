@@ -824,6 +824,10 @@
                             display: block; /* Ensures it takes full width and centers */
                             margin-left: auto;
                             margin-right: auto;
+                            /* NEW: Make canvas itself responsive */
+                            width: 100%; /* Take 100% of parent's width */
+                            height: auto; /* Maintain aspect ratio */
+                            max-width: 100%; /* Ensure it doesn't exceed its container */
                         }
                         #notificationsTab .sub-form-container .hidden {
                             display: none !important; /* Use !important to override potential inline styles */
@@ -875,11 +879,11 @@
                     <textarea id="descripcion" placeholder="Ingrese detalles" oninput="ajustarAltura(this)"></textarea>
                     
                     <h3>Firma del Jefe Inmediato</h3>
-                    <canvas id="firmaSupervisor" width="300" height="100"></canvas>
+                    <canvas id="firmaSupervisor"></canvas> <!-- Removed fixed width/height -->
                     <button type="button" id="limpiarFirmaSupervisor">Limpiar Firma</button>
                     
                     <h3>Firma del Empleado</h3>
-                    <canvas id="firmaEmpleado" width="300" height="100"></canvas>
+                    <canvas id="firmaEmpleado"></canvas> <!-- Removed fixed width/height -->
                     <button type="button" id="limpiarFirmaEmpleado">Limpiar Firma</button>
 
                     <label for="testigoSelect">¿Hay testigo en el reporte?</label>
@@ -891,7 +895,7 @@
                         <label for="nombreTestigo">Nombre del Testigo:</label>
                         <input type="text" id="nombreTestigo" placeholder="Ingrese nombre del testigo">
                         <h3>Firma del Testigo</h3>
-                        <canvas id="firmaTestigo" width="300" height="100"></canvas>
+                        <canvas id="firmaTestigo"></canvas> <!-- Removed fixed width/height -->
                         <button type="button" id="limpiarFirmaTestigo" class="hidden">Limpiar Firma</button>
                     </div>
                     
@@ -1449,9 +1453,9 @@
                             <button type="button" class="btn btn-danger p-2 rounded-full flex-shrink-0 ml-3 remove-dynamic-activity-btn">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm6 0a1 1 0 11-2 0v6a1 1 0 112 0V8z" clip-rule="evenodd" />
-                                </svg>
-                            </button>
-                        `;
+                            </svg>
+                        </button>
+                    `;
                     }
 
                     activityDiv.innerHTML = `
@@ -1686,6 +1690,12 @@
                     let dibujando = false;
                     let firmado = false;
 
+                    // Set canvas dimensions dynamically to be responsive
+                    // Aspect ratio 300x100 = 3:1
+                    const aspectRatio = 3;
+                    canvas.width = canvas.offsetWidth; // Set internal drawing buffer width to actual rendered width
+                    canvas.height = canvas.width / aspectRatio; // Maintain aspect ratio
+
                     // Set stroke properties for the signature
                     ctx.lineWidth = 2;
                     ctx.lineCap = "round";
@@ -1759,7 +1769,7 @@
                     if (clearButton) {
                         clearButton.classList.add("hidden");
                     }
-                    // Reinitialize canvas to reset its internal state (dibujando, firmado)
+                    // Reinitialize canvas to reset its internal state (dibujando, firmado) and redraw fresh
                     inicializarCanvas(id);
                 }
 
@@ -1896,9 +1906,15 @@
                 document.getElementById("limpiarFirmaEmpleado").addEventListener('click', () => limpiarCanvas('firmaEmpleado'));
                 document.getElementById("limpiarFirmaTestigo").addEventListener('click', () => limpiarCanvas('firmaTestigo'));
 
-                inicializarCanvas("firmaSupervisor");
-                inicializarCanvas("firmaEmpleado");
+                // Initial calls for all canvases and witness section
+                const canvasIds = ['firmaSupervisor', 'firmaEmpleado', 'firmaTestigo'];
+                canvasIds.forEach(id => inicializarCanvas(id));
                 mostrarCamposTestigo(); // To handle the initial state of the select
+
+                // Add resize listener to re-initialize canvases when window is resized
+                window.addEventListener('resize', () => {
+                    canvasIds.forEach(id => inicializarCanvas(id));
+                });
             }
             // End of Notifications Tab (Reporte de Trabajo) Logic
         });
