@@ -989,7 +989,14 @@
                     });
 
                     const encodedMessage = encodeURIComponent(whatsappMessage);
-                    window.open(`https://wa.me/?text=${encodedMessage}`, '_blank');
+                    try {
+                        window.open(`https://wa.me/?text=${encodedMessage}`, '_blank');
+                        console.log("Attempted to open WhatsApp link for Cleaning Report. No immediate error."); // Debugging
+                    } catch (e) {
+                        console.error("Error attempting to open WhatsApp link for Cleaning Report:", e); // Error during open
+                        messageBox.textContent = 'Error al intentar abrir WhatsApp. Por favor, asegúrese de que los pop-ups no estén bloqueados.';
+                        messageBox.style.display = 'block';
+                    }
                 });
             })(); // End of Cleaning Report Form logic
 
@@ -1185,7 +1192,7 @@
                 const entregaMessageBox = document.getElementById('entregaMessageBox');
                 const addAdminActivityBtn = document.getElementById('addAdminActivityBtn');
                 const addDulceriaActivityBtn = document.getElementById('addDulceriaActivityBtn');
-                const addOperacionesActivityBtn = document = document.getElementById('addOperacionesActivityBtn');
+                const addOperacionesActivityBtn = document.getElementById('addOperacionesActivityBtn');
 
                 const adminActivitiesList = [
                     "Stock Ideal",
