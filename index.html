@@ -1070,6 +1070,7 @@
 
                 assignAreasForm.addEventListener('submit', (event) => {
                     event.preventDefault();
+                    console.log("Submit event fired for Assign Areas Form."); // Debugging
 
                     const assignReportType = document.getElementById('assignReportType').value;
                     const assignDate = document.getElementById('assignDate').value;
@@ -1078,13 +1079,16 @@
                     if (!assignReportType || !assignDate || !assignSupervisorName) {
                         assignMessageBox.textContent = 'Por favor, complete todos los campos principales (Tipo de Reporte, Fecha, Supervisor).';
                         assignMessageBox.style.display = 'block';
+                        console.log("Validation failed: Date or Supervisor Name missing in Assign Areas."); // Debugging
                         return;
                     }
+                    console.log("Initial validation passed for Assign Areas: Date and Supervisor Name are present."); // Debugging
 
                     const allResponsibleCleanerSections = responsibleCleanersContainer.querySelectorAll('.cleaner-section');
                     if (allResponsibleCleanerSections.length === 0) {
                         assignMessageBox.textContent = 'Debe añadir al menos un responsable de limpieza.';
                         assignMessageBox.style.display = 'block';
+                        console.log("Validation failed: No responsible cleaners added in Assign Areas."); // Debugging
                         return;
                     }
 
@@ -1102,13 +1106,13 @@
 
                         const activitiesForThisResponsible = [];
                         const currentResponsibleActivitiesContainer = responsibleDiv.querySelector('.responsible-activities-container');
-                        const activityItems = currentResponsibleActivitiesContainer.querySelectorAll('.area-item');
+                        const activityItems = currentResponsibleActivitiesContainer.querySelectorAll('.area-item'); // Correct variable reference
 
                         if (activityItems.length === 0) {
                             allActivitiesValid = false;
                         }
 
-                        // Correction: loop over activityItems, not areaItems (which is undefined here)
+                        // Looping over 'activityItems' from the current scope
                         activityItems.forEach(activityDiv => {
                             const activityNameInput = activityDiv.querySelector('input[type="text"]');
 
@@ -1127,18 +1131,21 @@
                     if (!allResponsiblesValid) {
                         assignMessageBox.textContent = 'Por favor, ingrese el nombre para todos los responsables de limpieza.';
                         assignMessageBox.style.display = 'block';
+                        console.log("Validation failed: Responsible cleaner name missing in Assign Areas."); // Debugging
                         return;
                     }
 
                     if (!allActivitiesValid) {
                         assignMessageBox.textContent = 'Por favor, ingrese una descripción para todas las actividades asignadas a cada responsable.';
                         assignMessageBox.style.display = 'block';
+                        console.log("Validation failed: Activity description missing in Assign Areas."); // Debugging
                         return;
                     }
 
                     assignMessageBox.style.display = 'none';
+                    console.log("All validations passed for Assign Areas. Proceeding to WhatsApp message generation."); // Debugging
 
-                    // Format message for WhatsApp for the assignment
+                    // Formatear mensaje para WhatsApp para la asignación
                     let whatsappMessage = `*Asignación de Áreas de Limpieza - ${assignReportType}*\n\n`;
                     whatsappMessage += `*Fecha:* ${assignDate}\n`;
                     whatsappMessage += `*Supervisor Responsable:* ${assignSupervisorName}\n\n`;
@@ -1155,8 +1162,17 @@
                         }
                     });
 
+                    console.log("WhatsApp message generated for Assign Areas:", whatsappMessage); // Debugging
                     const encodedMessage = encodeURIComponent(whatsappMessage);
-                    window.open(`https://wa.me/?text=${encodedMessage}`, '_blank');
+                    
+                    try {
+                        window.open(`https://wa.me/?text=${encodedMessage}`, '_blank');
+                        console.log("Attempted to open WhatsApp link for Assign Areas. No immediate error."); // Debugging
+                    } catch (e) {
+                        console.error("Error attempting to open WhatsApp link for Assign Areas:", e); // Error during open
+                        assignMessageBox.textContent = 'Error al intentar abrir WhatsApp. Por favor, asegúrese de que los pop-ups no estén bloqueados.';
+                        assignMessageBox.style.display = 'block';
+                    }
                 });
             })(); // End of Area Assignment Form logic
 
@@ -1169,7 +1185,7 @@
                 const entregaMessageBox = document.getElementById('entregaMessageBox');
                 const addAdminActivityBtn = document.getElementById('addAdminActivityBtn');
                 const addDulceriaActivityBtn = document.getElementById('addDulceriaActivityBtn');
-                const addOperacionesActivityBtn = document.getElementById('addOperacionesActivityBtn');
+                const addOperacionesActivityBtn = document = document.getElementById('addOperacionesActivityBtn');
 
                 const adminActivitiesList = [
                     "Stock Ideal",
@@ -1441,8 +1457,15 @@
 
                     console.log("WhatsApp message generated:", whatsappMessage); // Debugging
                     const encodedMessage = encodeURIComponent(whatsappMessage);
-                    window.open(`https://wa.me/?text=${encodedMessage}`, '_blank');
-                    console.log("Attempted to open WhatsApp link."); // Debugging
+                    
+                    try {
+                        window.open(`https://wa.me/?text=${encodedMessage}`, '_blank');
+                        console.log("Attempted to open WhatsApp link."); // Debugging
+                    } catch (e) {
+                        console.error("Error attempting to open WhatsApp link:", e); // Error during open
+                        entregaMessageBox.textContent = 'Error al intentar abrir WhatsApp. Por favor, asegúrese de que los pop-ups no estén bloqueados.';
+                        entregaMessageBox.style.display = 'block';
+                    }
                 });
             })(); // End of Turno Entrega Activities Tab logic
         });
