@@ -1691,8 +1691,9 @@
                     let firmado = false;
 
                     // Set canvas dimensions dynamically to be responsive
-                    // Aspect ratio 300x100 = 3:1
-                    const aspectRatio = 3;
+                    // Aspect ratio (width / height). Smaller number means taller canvas.
+                    // 3:1 (width:height) was too short. Try 2.5:1 for more height.
+                    const aspectRatio = 2.5; // NEW: Adjusted aspect ratio
                     canvas.width = canvas.offsetWidth; // Set internal drawing buffer width to actual rendered width
                     canvas.height = canvas.width / aspectRatio; // Maintain aspect ratio
 
