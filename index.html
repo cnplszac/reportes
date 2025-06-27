@@ -710,7 +710,7 @@
                         <textarea id="commentsOperaciones" name="commentsOperaciones" rows="3" placeholder="Observaciones generales para operaciones..." class="rounded-lg"></textarea>
                     </div>
 
-                    <button type="submit" class="btn btn-primary w-full mt-8"><i class="fab fa-whatsapp mr-2"></i>Enviar Reporte de Entrega de Turno por WhatsApp</button>
+                    <button type="submit" class="btn btn-primary w-full mt-8"><i class="fab fa-whatsapp mr-2"></i>Enviar Reporte por WhatsApp</button>
                 </form>
 
                 <div id="entregaMessageBox" class="message-box mt-4">
@@ -1108,7 +1108,8 @@
                             allActivitiesValid = false;
                         }
 
-                        areaItems.forEach(activityDiv => {
+                        // Correction: loop over activityItems, not areaItems (which is undefined here)
+                        activityItems.forEach(activityDiv => {
                             const activityNameInput = activityDiv.querySelector('input[type="text"]');
 
                             if (!activityNameInput.value.trim()) {
@@ -1347,6 +1348,7 @@
 
                 turnoEntregaForm.addEventListener('submit', (event) => {
                     event.preventDefault();
+                    console.log("Submit event fired for Turno Entrega Form."); // Debugging
 
                     const entregaDate = document.getElementById('entregaDate').value;
                     const entregaSupervisorName = document.getElementById('entregaSupervisorName').value.trim();
@@ -1354,12 +1356,17 @@
                     if (!entregaDate || !entregaSupervisorName) {
                         entregaMessageBox.textContent = 'Por favor, complete los campos de Fecha y Supervisor Responsable.';
                         entregaMessageBox.style.display = 'block';
+                        console.log("Validation failed: Date or Supervisor Name missing."); // Debugging
                         return;
                     }
+                    console.log("Initial validation passed: Date and Supervisor Name are present."); // Debugging
+
 
                     const adminActivitiesData = getSectionActivitiesData('adminActivitiesContainer');
                     const dulceriaActivitiesData = getSectionActivitiesData('dulceriaActivitiesContainer');
                     const operacionesActivitiesData = getSectionActivitiesData('operacionesActivitiesContainer');
+
+                    console.log("Activities data fetched:", { adminActivitiesData, dulceriaActivitiesData, operacionesActivitiesData }); // Debugging
 
                     const validateDynamicActivities = (activitiesData, sectionName) => {
                         const emptyDynamicActivities = activitiesData.filter(activity =>
@@ -1371,15 +1378,19 @@
                         if (emptyDynamicActivities.length > 0) {
                             entregaMessageBox.textContent = `Por favor, ingrese un nombre para todas las actividades adicionales de ${sectionName} o indique el motivo por el que no se realizaron.`;
                             entregaMessageBox.style.display = 'block';
+                            console.log(`Validation failed for dynamic activities in ${sectionName}.`); // Debugging
                             return false;
                         }
+                        console.log(`Validation passed for dynamic activities in ${sectionName}.`); // Debugging
                         return true;
                     };
 
-                    if (!validateDynamicActivities(adminActivitiesData, 'Administrativas')) return;
-                    if (!validateDynamicActivities(dulceriaActivitiesData, 'Dulcería')) return;
-                    if (!validateDynamicActivities(operacionesActivitiesData, 'Operaciones')) return;
+                    if (!validateDynamicActivities(adminActivitiesData, 'Administrativas')) { return; }
+                    if (!validateDynamicActivities(dulceriaActivitiesData, 'Dulcería')) { return; }
+                    if (!validateDynamicActivities(operacionesActivitiesData, 'Operaciones')) { return; }
 
+                    entregaMessageBox.style.display = 'none';
+                    console.log("All validations passed. Proceeding to WhatsApp message generation."); // Debugging
 
                     const commentsAdmin = document.getElementById('commentsAdmin').value.trim();
                     const commentsDulceria = document.getElementById('commentsDulceria').value.trim();
@@ -1428,8 +1439,10 @@
                     }
                     whatsappMessage += `\n`;
 
+                    console.log("WhatsApp message generated:", whatsappMessage); // Debugging
                     const encodedMessage = encodeURIComponent(whatsappMessage);
                     window.open(`https://wa.me/?text=${encodedMessage}`, '_blank');
+                    console.log("Attempted to open WhatsApp link."); // Debugging
                 });
             })(); // End of Turno Entrega Activities Tab logic
         });
