@@ -1,0 +1,1420 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menú de Tienda</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Estilos generales del cuerpo */
+        body {
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #f0f8ff, #e0ffff); /* Fondo degradado suave */
+            color: #333;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* Contenedor principal de la aplicación */
+        .app-container {
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            padding: 30px;
+            text-align: center;
+            max-width: 90%;
+            width: 900px; /* Ancho un poco mayor para el menú */
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            border: 2px solid #add8e6; /* Borde suave */
+        }
+
+        /* Título de la aplicación */
+        h1 {
+            color: #4682b4; /* Azul acero */
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        /* Contenedor del menú principal */
+        .main-menu {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        /* Estilo para los botones del menú */
+        .menu-button {
+            background-color: #007bff; /* Azul primario */
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .menu-button:hover {
+            background-color: #0056b3; /* Azul más oscuro */
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .menu-button:active {
+            transform: translateY(0);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Contenedor de sub-menús y contenido */
+        .content-area {
+            background-color: #f8f8f8;
+            border-radius: 10px;
+            padding: 20px;
+            min-height: 400px; /* Altura mínima para el contenido */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 1px dashed #ccc;
+        }
+
+        /* Estilo para el mensaje de bienvenida en el menú principal */
+        .welcome-message {
+            background-color: #e0f2f7; /* Un azul claro */
+            border: 1px solid #add8e6;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 20px;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .welcome-message h2 {
+            color: #4682b4;
+            margin: 0;
+            font-size: 1.8em;
+        }
+
+        .welcome-message p {
+            margin: 0;
+            font-size: 1.1em;
+            color: #555;
+        }
+
+        .welcome-message .icon {
+            font-size: 3em;
+            color: #4682b4;
+        }
+
+
+        /* Sub-menú */
+        .submenu {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .submenu-button {
+            background-color: #6c757d; /* Gris */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .submenu-button:hover {
+            background-color: #5a6268; /* Gris más oscuro */
+            transform: translateY(-2px);
+        }
+
+        /* Estilos específicos para el juego del ahorcado (copia de los estilos anteriores) */
+        .hangman-game-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .hangman-game-container h1 {
+            font-size: 2em; /* Ajuste para que no sea tan grande dentro del sub-contenido */
+            margin-bottom: 15px;
+        }
+
+        #hangmanSvg, #sodaGlassSvg, #bubblingGlassSvg, #iceGlassSvg, #cleanGlassSvg, #flavorSvg, #popcornSvg, #thermometerSvg, #crunchySvg, #fullPopcornSvg, #deliverySvg {
+            width: 200px;
+            height: 200px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
+            display: none; /* Oculto por defecto, controlado por JS */
+        }
+
+        #hangmanSvg path {
+            fill: none;
+            stroke: #555;
+            stroke-width: 4;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        #hangmanSvg path.visible {
+            opacity: 1;
+        }
+
+        #sodaGlassSvg rect, #sodaGlassSvg path,
+        #bubblingGlassSvg rect, #bubblingGlassSvg path, #bubblingGlassSvg circle,
+        #iceGlassSvg rect, #iceGlassSvg path,
+        #cleanGlassSvg rect, #cleanGlassSvg path,
+        #flavorSvg circle, #flavorSvg path,
+        #popcornSvg rect, #popcornSvg path, #popcornSvg circle, #popcornSvg line,
+        #thermometerSvg rect, #thermometerSvg circle, #thermometerSvg line,
+        #crunchySvg circle, #crunchySvg path,
+        #fullPopcornSvg circle, #fullPopcornSvg path,
+        #deliverySvg rect, #deliverySvg path, #deliverySvg line { /* Añadir el nuevo SVG aquí */
+            stroke: #555;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        #sodaGlassSvg .liquid, #bubblingGlassSvg .liquid {
+            fill: #ff6347;
+            stroke: none;
+        }
+
+        #bubblingGlassSvg .bubble {
+            fill: #ADD8E6;
+            stroke: none;
+            opacity: 0.7;
+        }
+
+        #iceGlassSvg .ice {
+            fill: #e0f8ff;
+            stroke: #ADD8E6;
+            stroke-width: 1;
+        }
+
+        #flavorSvg .face {
+            fill: #FFD700;
+            stroke: #555;
+            stroke-width: 2;
+        }
+        #flavorSvg .eye {
+            fill: #555;
+            stroke: none;
+        }
+        #flavorSvg .tongue {
+            fill: #FF69B4;
+            stroke: #555;
+            stroke-width: 1.5;
+        }
+        #popcornSvg rect, #popcornSvg path {
+            fill: #FFD700; /* Color de la bolsa de palomitas */
+        }
+        #popcornSvg line {
+            stroke: red; /* Rayas rojas */
+            stroke-width: 5;
+        }
+        #popcornSvg circle {
+            fill: #FFF8DC; /* Color de las palomitas */
+            stroke: #555;
+            stroke-width: 1;
+        }
+        #thermometerSvg .liquid-fill {
+            fill: #dc3545; /* Rojo para el líquido del termómetro */
+            stroke: none;
+        }
+        #crunchySvg .magnifying-glass {
+            fill: #f0f0f0;
+            stroke: #555;
+            stroke-width: 3;
+        }
+        #crunchySvg .handle {
+            stroke: #555;
+            stroke-width: 3;
+            fill: none;
+        }
+        #crunchySvg .texture-line {
+            stroke: #888;
+            stroke-width: 1;
+        }
+        #fullPopcornSvg .kernel { /* Estilo para el nuevo SVG de palomita completa */
+            fill: #FFF8DC; /* Color de la palomita */
+            stroke: #555;
+            stroke-width: 2;
+        }
+        #deliverySvg .basket {
+            fill: #D2B48C; /* Color de la canasta */
+            stroke: #555;
+            stroke-width: 2;
+        }
+        #deliverySvg .hand {
+            fill: #FFDEAD; /* Color de la piel */
+            stroke: #555;
+            stroke-width: 2;
+        }
+        #deliverySvg .no-circle {
+            fill: none;
+            stroke: red;
+            stroke-width: 5;
+        }
+        #deliverySvg .no-line {
+            stroke: red;
+            stroke-width: 5;
+        }
+
+
+        .word-display {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            min-height: 50px;
+            font-size: 2.5em;
+            font-weight: bold;
+            letter-spacing: 5px;
+            color: #36454F;
+            background-color: #e0f2f7;
+            border-radius: 10px;
+            padding: 15px 20px;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .word-letter {
+            min-width: 30px;
+            text-align: center;
+            border-bottom: 3px solid #87ceeb;
+            padding-bottom: 5px;
+        }
+
+        .word-letter.space {
+            border-bottom: none;
+            width: 20px;
+        }
+
+        .incorrect-letters {
+            font-size: 1.2em;
+            color: #dc3545;
+            min-height: 25px;
+        }
+
+        .alphabet-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+        }
+
+        .alphabet-button {
+            background-color: #87ceeb;
+            color: white;
+            border: none;
+            padding: 12px 15px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+            min-width: 45px;
+        }
+
+        .alphabet-button:hover:not(:disabled) {
+            background-color: #6495ed;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .alphabet-button:active:not(:disabled) {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .alphabet-button:disabled {
+            background-color: #cccccc;
+            color: #999999;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .message {
+            margin-top: 20px;
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #4682b4;
+            min-height: 30px;
+        }
+
+        .reset-button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+        }
+
+        .reset-button:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .reset-button:active {
+            transform: translateY(0);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+            .app-container {
+                padding: 20px;
+                width: 95%;
+            }
+            .main-menu {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .menu-button {
+                padding: 12px 25px;
+                font-size: 1.1em;
+            }
+            .hangman-game-container h1 {
+                font-size: 1.8em;
+            }
+            #hangmanSvg, #sodaGlassSvg, #bubblingGlassSvg, #iceGlassSvg, #cleanGlassSvg, #flavorSvg, #popcornSvg, #thermometerSvg, #crunchySvg, #fullPopcornSvg, #deliverySvg {
+                width: 150px;
+                height: 150px;
+            }
+            .word-display {
+                font-size: 2em;
+            }
+            .alphabet-button {
+                padding: 10px 12px;
+                font-size: 1em;
+                min-width: 40px;
+            }
+            .reset-button {
+                padding: 10px 20px;
+                font-size: 1em;
+            }
+            .welcome-message {
+                padding: 20px;
+            }
+            .welcome-message h2 {
+                font-size: 1.6em;
+            }
+            .welcome-message .icon {
+                font-size: 2.5em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            .app-container {
+                padding: 15px;
+            }
+            .menu-button {
+                padding: 10px 20px;
+                font-size: 1em;
+            }
+            .hangman-game-container h1 {
+                font-size: 1.6em;
+            }
+            #hangmanSvg, #sodaGlassSvg, #bubblingGlassSvg, #iceGlassSvg, #cleanGlassSvg, #flavorSvg, #popcornSvg, #thermometerSvg, #crunchySvg, #fullPopcornSvg, #deliverySvg {
+                width: 120px;
+                height: 120px;
+            }
+            .word-display {
+                font-size: 1.8em;
+                gap: 5px;
+            }
+            .word-letter {
+                min-width: 25px;
+            }
+            .alphabet-button {
+                padding: 8px 10px;
+                font-size: 0.9em;
+                min-width: 35px;
+            }
+            .message {
+                font-size: 1.2em;
+            }
+            .welcome-message {
+                padding: 15px;
+            }
+            .welcome-message h2 {
+                font-size: 1.4em;
+            }
+            .welcome-message .icon {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <h1 id="mainTitle">Bienvenido al Menú Principal</h1>
+
+        <div class="main-menu" id="mainMenu">
+            <button class="menu-button" onclick="showCategory('dulceria')">
+                <i class="fas fa-candy-cane"></i> Dulcería
+            </button>
+            <button class="menu-button" onclick="showCategory('operaciones')">
+                <i class="fas fa-cogs"></i> Operaciones
+            </button>
+        </div>
+
+        <div class="content-area" id="contentArea">
+            <!-- El mensaje de bienvenida estilizado se insertará aquí -->
+        </div>
+    </div>
+
+    <script>
+        // --- Lógica del Menú Principal ---
+        const mainTitle = document.getElementById('mainTitle');
+        const mainMenu = document.getElementById('mainMenu');
+        const contentArea = document.getElementById('contentArea');
+
+        /**
+         * Muestra el contenido de una categoría específica.
+         * @param {string} category El nombre de la categoría ('dulceria' o 'operaciones').
+         */
+        function showCategory(category) {
+            contentArea.innerHTML = ''; // Limpiar contenido anterior
+            mainTitle.textContent = category === 'dulceria' ? 'Dulcería' : 'Operaciones';
+            mainMenu.style.display = 'none'; // Ocultar menú principal
+
+            if (category === 'dulceria') {
+                const submenuDiv = document.createElement('div');
+                submenuDiv.classList.add('submenu');
+                submenuDiv.innerHTML = `
+                    <button class="submenu-button" onclick="showContent('bebidas')">
+                        <i class="fas fa-wine-glass"></i> Bebidas
+                    </button>
+                    <button class="submenu-button" onclick="showContent('palomitas')">
+                        <i class="fas fa-popcorn"></i> Palomitas
+                    </button>
+                    <button class="submenu-button" onclick="goBackToMainMenu()">
+                        <i class="fas fa-arrow-left"></i> Volver al Menú Principal
+                    </button>
+                `;
+                contentArea.appendChild(submenuDiv);
+            } else if (category === 'operaciones') {
+                contentArea.innerHTML = `
+                    <p>Contenido de Operaciones (próximamente)</p>
+                    <button class="submenu-button" onclick="goBackToMainMenu()">
+                        <i class="fas fa-arrow-left"></i> Volver al Menú Principal
+                    </button>
+                `;
+            }
+        }
+
+        /**
+         * Muestra el contenido específico (juego, mensaje, etc.).
+         * @param {string} contentType El tipo de contenido a mostrar ('bebidas', 'palomitas', etc.).
+         */
+        function showContent(contentType) {
+            contentArea.innerHTML = ''; // Limpiar contenido anterior
+            if (contentType === 'bebidas') {
+                mainTitle.textContent = 'Juego del Ahorcado: Bebidas';
+                activeHangmanWordsData = drinksWordsData; // Establecer la lista de palabras activa
+                currentHangmanGameType = 'bebidas';
+                // Insertar el HTML del juego del ahorcado
+                contentArea.innerHTML = `
+                    <div class="hangman-game-container">
+                        <h1>Juego del Ahorcado</h1>
+                        <div class="game-display">
+                            <!-- SVG para el dibujo del ahorcado -->
+                            <svg id="hangmanSvg" viewBox="0 0 200 200">
+                                <path id="base" d="M10 190 L190 190" />
+                                <path id="post" d="M50 190 L50 10" />
+                                <path id="beam" d="M50 10 L150 10" />
+                                <path id="rope" d="M150 10 L150 50" />
+                                <path id="head" d="M125 100 A25 25 0 1 0 175 100 A25 25 0 1 0 125 100" />
+                                <path id="body" d="M150 100 L150 160" />
+                                <path id="arm-left" d="M150 120 L120 140" />
+                                <path id="arm-right" d="M150 120 L180 140" />
+                                <path id="leg-left" d="M150 160 L130 180" />
+                                <path id="leg-right" d="M150 160 L170 180" />
+                            </svg>
+
+                            <!-- SVG para el dibujo del vaso de gaseosa -->
+                            <svg id="sodaGlassSvg" viewBox="0 0 200 200">
+                                <rect x="70" y="50" width="60" height="120" rx="5" ry="5" stroke="#555" fill="none" />
+                                <path d="M70 50 Q100 40 130 50" stroke="#555" fill="none" stroke-width="2" />
+                                <path class="liquid" d="M70 60 Q100 55 130 60 L130 170 L70 170 Z" />
+                            </svg>
+
+                            <!-- SVG para el dibujo del vaso burbujeante -->
+                            <svg id="bubblingGlassSvg" viewBox="0 0 200 200">
+                                <rect x="70" y="50" width="60" height="120" rx="5" ry="5" stroke="#555" fill="none" />
+                                <path d="M70 50 Q100 40 130 50" stroke="#555" fill="none" stroke-width="2" />
+                                <path class="liquid" d="M70 60 Q100 55 130 60 L130 170 L70 170 Z" />
+                                <circle class="bubble" cx="80" cy="150" r="3" />
+                                <circle class="bubble" cx="95" cy="130" r="4" />
+                                <circle class="bubble" cx="110" cy="110" r="3.5" />
+                                <circle class="bubble" cx="85" cy="90" r="2.5" />
+                                <circle class="bubble" cx="120" cy="80" r="4.5" />
+                                <circle class="bubble" cx="100" cy="70" r="3" />
+                            </svg>
+
+                            <!-- SVG para el vaso con hielo -->
+                            <svg id="iceGlassSvg" viewBox="0 0 200 200">
+                                <rect x="70" y="50" width="60" height="120" rx="5" ry="5" stroke="#555" fill="none" />
+                                <path d="M70 50 Q100 40 130 50" stroke="#555" fill="none" stroke-width="2" />
+                                <rect class="ice" x="75" y="60" width="20" height="20" rx="3" ry="3" />
+                                <rect class="ice" x="100" y="65" width="22" height="22" rx="3" ry="3" />
+                                <rect class="ice" x="85" y="85" width="18" height="18" rx="3" ry="3" />
+                                <rect class="ice" x="78" y="105" width="25" height="25" rx="3" ry="3" />
+                                <rect class="ice" x="105" y="95" width="15" height="15" rx="3" ry="3" />
+                                <rect class="ice" x="90" y="125" width="20" height="20" rx="3" ry="3" />
+                                <rect class="ice" x="75" y="145" width="22" height="22" rx="3" ry="3" />
+                                <rect class="ice" x="100" y="150" width="18" height="18" rx="3" ry="3" />
+                            </svg>
+
+                            <!-- SVG para el vaso limpio -->
+                            <svg id="cleanGlassSvg" viewBox="0 0 200 200">
+                                <rect x="70" y="50" width="60" height="120" rx="5" ry="5" stroke="#555" fill="none" />
+                                <path d="M70 50 Q100 40 130 50" stroke="#555" fill="none" stroke-width="2" />
+                                <path d="M80 60 L85 55 L90 60" stroke="#ADD8E6" stroke-width="2" opacity="0.8"/>
+                                <path d="M110 70 L115 65 L120 70" stroke="#ADD8E6" stroke-width="2" opacity="0.8"/>
+                            </svg>
+
+                            <!-- SVG para el sabor -->
+                            <svg id="flavorSvg" viewBox="0 0 200 200">
+                                <circle class="face" cx="100" cy="100" r="60" />
+                                <circle class="eye" cx="75" cy="85" r="8" />
+                                <circle class="eye" cx="125" cy="85" r="8" />
+                                <path d="M70 120 Q100 140 130 120" stroke="#555" stroke-width="3" fill="none" />
+                                <path class="tongue" d="M100 135 Q110 145 100 155 Q90 145 100 135 Z" />
+                            </svg>
+
+                            <!-- Nuevo SVG para las palomitas (oculto por defecto) -->
+                            <svg id="popcornSvg" viewBox="0 0 200 200">
+                                <!-- Bolsa de palomitas -->
+                                <rect x="60" y="80" width="80" height="100" rx="5" ry="5" fill="#FFD700" stroke="#555" stroke-width="2" />
+                                <path d="M60 80 Q70 60 100 60 Q130 60 140 80" fill="#FFD700" stroke="#555" stroke-width="2" />
+                                <!-- Rayas rojas en la bolsa -->
+                                <line x1="75" y1="80" x2="70" y2="180" stroke="red" stroke-width="5" />
+                                <line x1="95" y1="80" x2="90" y2="180" stroke="red" stroke-width="5" />
+                                <line x1="115" y1="80" x2="110" y2="180" stroke="red" stroke-width="5" />
+                                <!-- Palomitas saliendo -->
+                                <circle cx="80" cy="70" r="10" fill="#FFF8DC" stroke="#555" stroke-width="1" />
+                                <circle cx="120" cy="75" r="12" fill="#FFF8DC" stroke="#555" stroke-width="1" />
+                                <circle cx="100" cy="55" r="11" fill="#FFF8DC" stroke="#555" stroke-width="1" />
+                                <circle cx="70" cy="95" r="9" fill="#FFF8DC" stroke="#555" stroke-width="1" />
+                                <circle cx="130" cy="90" r="10" fill="#FFF8DC" stroke="#555" stroke-width="1" />
+                            </svg>
+
+                            <!-- Nuevo SVG para el termómetro (oculto por defecto) -->
+                            <svg id="thermometerSvg" viewBox="0 0 200 200">
+                                <!-- Base del termómetro -->
+                                <rect x="90" y="50" width="20" height="100" rx="10" ry="10" stroke="#555" fill="#f0f0f0" />
+                                <!-- Bulbo del termómetro -->
+                                <circle cx="100" cy="160" r="15" stroke="#555" fill="#f0f0f0" />
+                                <!-- Líquido rojo (alta temperatura) -->
+                                <rect x="94" y="60" width="12" height="95" class="liquid-fill" />
+                                <circle cx="100" cy="160" r="10" class="liquid-fill" />
+                                <!-- Marcas del termómetro -->
+                                <line x1="85" y1="70" x2="90" y2="70" stroke="#555" stroke-width="1" />
+                                <line x1="85" y1="90" x2="90" y2="90" stroke="#555" stroke-width="1" />
+                                <line x1="85" y1="110" x2="90" y2="110" stroke="#555" stroke-width="1" />
+                                <line x1="85" y1="130" x2="90" y2="130" stroke="#555" stroke-width="1" />
+                            </svg>
+
+                            <!-- Nuevo SVG para la textura crujiente (oculto por defecto) -->
+                            <svg id="crunchySvg" viewBox="0 0 200 200">
+                                <!-- Lupa -->
+                                <circle class="magnifying-glass" cx="100" cy="80" r="40" />
+                                <line class="handle" x1="130" y1="110" x2="160" y2="140" />
+                                <!-- Superficie texturizada -->
+                                <path class="texture-line" d="M60 140 Q80 130 100 140 T140 140" />
+                                <path class="texture-line" d="M65 150 Q85 140 105 150 T145 150" />
+                                <path class="texture-line" d="M70 160 Q90 150 110 160 T150 160" />
+                                <path class="texture-line" d="M75 170 Q95 160 115 170 T155 170" />
+                            </svg>
+
+                            <!-- Nuevo SVG para palomita completa (tamaño) -->
+                            <svg id="fullPopcornSvg" viewBox="0 0 200 200">
+                                <circle class="kernel" cx="100" cy="100" r="60" />
+                                <path class="kernel" d="M100 40 Q120 20 140 40 T160 60 Q180 80 160 100 T140 120 Q120 140 100 120 T80 140 Q60 120 40 100 T20 80 Q40 60 60 40 T100 40 Z" />
+                                <path class="kernel" d="M100 100 Q110 90 120 100 T100 110 Q90 120 80 110 T100 100 Z" />
+                            </svg>
+
+                            <!-- Nuevo SVG para la entrega (no tocar la canasta) -->
+                            <svg id="deliverySvg" viewBox="0 0 200 200">
+                                <!-- Canasta de palomitas -->
+                                <rect class="basket" x="60" y="100" width="80" height="60" rx="5" ry="5" />
+                                <path class="basket" d="M60 100 Q70 80 100 80 Q130 80 140 100" />
+                                <!-- Manos flotando (sin tocar) -->
+                                <path class="hand" d="M50 70 Q60 60 70 70 L75 80 L65 90 Q55 80 50 70 Z" />
+                                <path class="hand" d="M150 70 Q140 60 130 70 L125 80 L135 90 Q145 80 150 70 Z" />
+                                <!-- Símbolo de "no" sobre la canasta -->
+                                <circle class="no-circle" cx="100" cy="100" r="40" />
+                                <line class="no-line" x1="70" y1="70" x2="130" y2="130" />
+                            </svg>
+
+
+                            <!-- Palabra a adivinar -->
+                            <div class="word-display" id="wordDisplay"></div>
+                            <!-- Letras incorrectas adivinadas -->
+                            <div class="incorrect-letters" id="incorrectLetters">Letras incorrectas:</div>
+                        </div>
+                        <!-- Botones del alfabeto para adivinar -->
+                        <div class="alphabet-buttons" id="alphabetButtons"></div>
+                        <!-- Mensaje de estado del juego -->
+                        <div class="message" id="gameMessage">Adivina la palabra. ¡Buena suerte!</div>
+                        <!-- Botón de reinicio -->
+                        <button class="reset-button" id="resetButton"><i class="fas fa-redo"></i> Reiniciar Juego</button>
+                        <button class="submenu-button" onclick="showCategory('dulceria')" style="margin-top: 20px;">
+                            <i class="fas fa-arrow-left"></i> Volver a Dulcería
+                        </button>
+                    </div>
+                `;
+                // Re-inicializar el juego del ahorcado después de insertar su HTML
+                initializeHangmanGame();
+            } else if (contentType === 'palomitas') {
+                mainTitle.textContent = 'Juego del Ahorcado: Palomitas';
+                activeHangmanWordsData = popcornWordsData; // Establecer la lista de palabras activa para palomitas
+                currentHangmanGameType = 'palomitas';
+                // Insertar el HTML del juego del ahorcado (es el mismo HTML, solo cambia la lógica JS)
+                contentArea.innerHTML = `
+                    <div class="hangman-game-container">
+                        <h1>Juego del Ahorcado</h1>
+                        <div class="game-display">
+                            <!-- SVG para el dibujo del ahorcado -->
+                            <svg id="hangmanSvg" viewBox="0 0 200 200">
+                                <path id="base" d="M10 190 L190 190" />
+                                <path id="post" d="M50 190 L50 10" />
+                                <path id="beam" d="M50 10 L150 10" />
+                                <path id="rope" d="M150 10 L150 50" />
+                                <path id="head" d="M125 100 A25 25 0 1 0 175 100 A25 25 0 1 0 125 100" />
+                                <path id="body" d="M150 100 L150 160" />
+                                <path id="arm-left" d="M150 120 L120 140" />
+                                <path id="arm-right" d="M150 120 L180 140" />
+                                <path id="leg-left" d="M150 160 L130 180" />
+                                <path id="leg-right" d="M150 160 L170 180" />
+                            </svg>
+
+                            <!-- SVG para el dibujo del vaso de gaseosa -->
+                            <svg id="sodaGlassSvg" viewBox="0 0 200 200">
+                                <rect x="70" y="50" width="60" height="120" rx="5" ry="5" stroke="#555" fill="none" />
+                                <path d="M70 50 Q100 40 130 50" stroke="#555" fill="none" stroke-width="2" />
+                                <path class="liquid" d="M70 60 Q100 55 130 60 L130 170 L70 170 Z" />
+                            </svg>
+
+                            <!-- SVG para el dibujo del vaso burbujeante -->
+                            <svg id="bubblingGlassSvg" viewBox="0 0 200 200">
+                                <rect x="70" y="50" width="60" height="120" rx="5" ry="5" stroke="#555" fill="none" />
+                                <path d="M70 50 Q100 40 130 50" stroke="#555" fill="none" stroke-width="2" />
+                                <path class="liquid" d="M70 60 Q100 55 130 60 L130 170 L70 170 Z" />
+                                <circle class="bubble" cx="80" cy="150" r="3" />
+                                <circle class="bubble" cx="95" cy="130" r="4" />
+                                <circle class="bubble" cx="110" cy="110" r="3.5" />
+                                <circle class="bubble" cx="85" cy="90" r="2.5" />
+                                <circle class="bubble" cx="120" cy="80" r="4.5" />
+                                <circle class="bubble" cx="100" cy="70" r="3" />
+                            </svg>
+
+                            <!-- SVG para el vaso con hielo -->
+                            <svg id="iceGlassSvg" viewBox="0 0 200 200">
+                                <rect x="70" y="50" width="60" height="120" rx="5" ry="5" stroke="#555" fill="none" />
+                                <path d="M70 50 Q100 40 130 50" stroke="#555" fill="none" stroke-width="2" />
+                                <rect class="ice" x="75" y="60" width="20" height="20" rx="3" ry="3" />
+                                <rect class="ice" x="100" y="65" width="22" height="22" rx="3" ry="3" />
+                                <rect class="ice" x="85" y="85" width="18" height="18" rx="3" ry="3" />
+                                <rect class="ice" x="78" y="105" width="25" height="25" rx="3" ry="3" />
+                                <rect class="ice" x="105" y="95" width="15" height="15" rx="3" ry="3" />
+                                <rect class="ice" x="90" y="125" width="20" height="20" rx="3" ry="3" />
+                                <rect class="ice" x="75" y="145" width="22" height="22" rx="3" ry="3" />
+                                <rect class="ice" x="100" y="150" width="18" height="18" rx="3" ry="3" />
+                            </svg>
+
+                            <!-- SVG para el vaso limpio -->
+                            <svg id="cleanGlassSvg" viewBox="0 0 200 200">
+                                <rect x="70" y="50" width="60" height="120" rx="5" ry="5" stroke="#555" fill="none" />
+                                <path d="M70 50 Q100 40 130 50" stroke="#555" fill="none" stroke-width="2" />
+                                <path d="M80 60 L85 55 L90 60" stroke="#ADD8E6" stroke-width="2" opacity="0.8"/>
+                                <path d="M110 70 L115 65 L120 70" stroke="#ADD8E6" stroke-width="2" opacity="0.8"/>
+                            </svg>
+
+                            <!-- SVG para el sabor -->
+                            <svg id="flavorSvg" viewBox="0 0 200 200">
+                                <circle class="face" cx="100" cy="100" r="60" />
+                                <circle class="eye" cx="75" cy="85" r="8" />
+                                <circle class="eye" cx="125" cy="85" r="8" />
+                                <path d="M70 120 Q100 140 130 120" stroke="#555" stroke-width="3" fill="none" />
+                                <path class="tongue" d="M100 135 Q110 145 100 155 Q90 145 100 135 Z" />
+                            </svg>
+
+                            <!-- Nuevo SVG para las palomitas (oculto por defecto) -->
+                            <svg id="popcornSvg" viewBox="0 0 200 200">
+                                <!-- Bolsa de palomitas -->
+                                <rect x="60" y="80" width="80" height="100" rx="5" ry="5" fill="#FFD700" stroke="#555" stroke-width="2" />
+                                <path d="M60 80 Q70 60 100 60 Q130 60 140 80" fill="#FFD700" stroke="#555" stroke-width="2" />
+                                <!-- Rayas rojas en la bolsa -->
+                                <line x1="75" y1="80" x2="70" y2="180" stroke="red" stroke-width="5" />
+                                <line x1="95" y1="80" x2="90" y2="180" stroke="red" stroke-width="5" />
+                                <line x1="115" y1="80" x2="110" y2="180" stroke="red" stroke-width="5" />
+                                <!-- Palomitas saliendo -->
+                                <circle cx="80" cy="70" r="10" fill="#FFF8DC" stroke="#555" stroke-width="1" />
+                                <circle cx="120" cy="75" r="12" fill="#FFF8DC" stroke="#555" stroke-width="1" />
+                                <circle cx="100" cy="55" r="11" fill="#FFF8DC" stroke="#555" stroke-width="1" />
+                                <circle cx="70" cy="95" r="9" fill="#FFF8DC" stroke="#555" stroke-width="1" />
+                                <circle cx="130" cy="90" r="10" fill="#FFF8DC" stroke="#555" stroke-width="1" />
+                            </svg>
+
+                            <!-- Nuevo SVG para el termómetro (oculto por defecto) -->
+                            <svg id="thermometerSvg" viewBox="0 0 200 200">
+                                <!-- Base del termómetro -->
+                                <rect x="90" y="50" width="20" height="100" rx="10" ry="10" stroke="#555" fill="#f0f0f0" />
+                                <!-- Bulbo del termómetro -->
+                                <circle cx="100" cy="160" r="15" stroke="#555" fill="#f0f0f0" />
+                                <!-- Líquido rojo (alta temperatura) -->
+                                <rect x="94" y="60" width="12" height="95" class="liquid-fill" />
+                                <circle cx="100" cy="160" r="10" class="liquid-fill" />
+                                <!-- Marcas del termómetro -->
+                                <line x1="85" y1="70" x2="90" y2="70" stroke="#555" stroke-width="1" />
+                                <line x1="85" y1="90" x2="90" y2="90" stroke="#555" stroke-width="1" />
+                                <line x1="85" y1="110" x2="90" y2="110" stroke="#555" stroke-width="1" />
+                                <line x1="85" y1="130" x2="90" y2="130" stroke="#555" stroke-width="1" />
+                            </svg>
+
+                            <!-- Nuevo SVG para la textura crujiente (oculto por defecto) -->
+                            <svg id="crunchySvg" viewBox="0 0 200 200">
+                                <!-- Lupa -->
+                                <circle class="magnifying-glass" cx="100" cy="80" r="40" />
+                                <line class="handle" x1="130" y1="110" x2="160" y2="140" />
+                                <!-- Superficie texturizada -->
+                                <path class="texture-line" d="M60 140 Q80 130 100 140 T140 140" />
+                                <path class="texture-line" d="M65 150 Q85 140 105 150 T145 150" />
+                                <path class="texture-line" d="M70 160 Q90 150 110 160 T150 160" />
+                                <path class="texture-line" d="M75 170 Q95 160 115 170 T155 170" />
+                            </svg>
+
+                            <!-- Nuevo SVG para palomita completa (tamaño) -->
+                            <svg id="fullPopcornSvg" viewBox="0 0 200 200">
+                                <circle class="kernel" cx="100" cy="100" r="60" />
+                                <path class="kernel" d="M100 40 Q120 20 140 40 T160 60 Q180 80 160 100 T140 120 Q120 140 100 120 T80 140 Q60 120 40 100 T20 80 Q40 60 60 40 T100 40 Z" />
+                                <path class="kernel" d="M100 100 Q110 90 120 100 T100 110 Q90 120 80 110 T100 100 Z" />
+                            </svg>
+
+                            <!-- Nuevo SVG para la entrega (no tocar la canasta) -->
+                            <svg id="deliverySvg" viewBox="0 0 200 200">
+                                <!-- Canasta de palomitas -->
+                                <rect class="basket" x="60" y="100" width="80" height="60" rx="5" ry="5" />
+                                <path class="basket" d="M60 100 Q70 80 100 80 Q130 80 140 100" />
+                                <!-- Manos flotando (sin tocar) -->
+                                <path class="hand" d="M50 70 Q60 60 70 70 L75 80 L65 90 Q55 80 50 70 Z" />
+                                <path class="hand" d="M150 70 Q140 60 130 70 L125 80 L135 90 Q145 80 150 70 Z" />
+                                <!-- Símbolo de "no" sobre la canasta -->
+                                <circle class="no-circle" cx="100" cy="100" r="40" />
+                                <line class="no-line" x1="70" y1="70" x2="130" y2="130" />
+                            </svg>
+
+
+                            <!-- Palabra a adivinar -->
+                            <div class="word-display" id="wordDisplay"></div>
+                            <!-- Letras incorrectas adivinadas -->
+                            <div class="incorrect-letters" id="incorrectLetters">Letras incorrectas:</div>
+                        </div>
+                        <!-- Botones del alfabeto para adivinar -->
+                        <div class="alphabet-buttons" id="alphabetButtons"></div>
+                        <!-- Mensaje de estado del juego -->
+                        <div class="message" id="gameMessage">Adivina la palabra. ¡Buena suerte!</div>
+                        <!-- Botón de reinicio -->
+                        <button class="reset-button" id="resetButton"><i class="fas fa-redo"></i> Reiniciar Juego</button>
+                        <button class="submenu-button" onclick="showCategory('dulceria')" style="margin-top: 20px;">
+                            <i class="fas fa-arrow-left"></i> Volver a Dulcería
+                        </button>
+                    </div>
+                `;
+                // Re-inicializar el juego del ahorcado después de insertar su HTML
+                initializeHangmanGame();
+            } else if (contentType === 'palomitas') {
+                mainTitle.textContent = 'Juego del Ahorcado: Palomitas';
+                activeHangmanWordsData = popcornWordsData; // Establecer la lista de palabras activa para palomitas
+                currentHangmanGameType = 'palomitas';
+                // Insertar el HTML del juego del ahorcado (es el mismo HTML, solo cambia la lógica JS)
+                contentArea.innerHTML = `
+                    <div class="hangman-game-container">
+                        <h1>Juego del Ahorcado</h1>
+                        <div class="game-display">
+                            <!-- SVG para el dibujo del ahorcado -->
+                            <svg id="hangmanSvg" viewBox="0 0 200 200">
+                                <path id="base" d="M10 190 L190 190" />
+                                <path id="post" d="M50 190 L50 10" />
+                                <path id="beam" d="M50 10 L150 10" />
+                                <path id="rope" d="M150 10 L150 50" />
+                                <path id="head" d="M125 100 A25 25 0 1 0 175 100 A25 25 0 1 0 125 100" />
+                                <path id="body" d="M150 100 L150 160" />
+                                <path id="arm-left" d="M150 120 L120 140" />
+                                <path id="arm-right" d="M150 120 L180 140" />
+                                <path id="leg-left" d="M150 160 L130 180" />
+                                <path id="leg-right" d="M150 160 L170 180" />
+                            </svg>
+
+                            <!-- SVG para el dibujo del vaso de gaseosa -->
+                            <svg id="sodaGlassSvg" viewBox="0 0 200 200">
+                                <rect x="70" y="50" width="60" height="120" rx="5" ry="5" stroke="#555" fill="none" />
+                                <path d="M70 50 Q100 40 130 50" stroke="#555" fill="none" stroke-width="2" />
+                                <path class="liquid" d="M70 60 Q100 55 130 60 L130 170 L70 170 Z" />
+                            </svg>
+
+                            <!-- SVG para el dibujo del vaso burbujeante -->
+                            <svg id="bubblingGlassSvg" viewBox="0 0 200 200">
+                                <rect x="70" y="50" width="60" height="120" rx="5" ry="5" stroke="#555" fill="none" />
+                                <path d="M70 50 Q100 40 130 50" stroke="#555" fill="none" stroke-width="2" />
+                                <path class="liquid" d="M70 60 Q100 55 130 60 L130 170 L70 170 Z" />
+                                <circle class="bubble" cx="80" cy="150" r="3" />
+                                <circle class="bubble" cx="95" cy="130" r="4" />
+                                <circle class="bubble" cx="110" cy="110" r="3.5" />
+                                <circle class="bubble" cx="85" cy="90" r="2.5" />
+                                <circle class="bubble" cx="120" cy="80" r="4.5" />
+                                <circle class="bubble" cx="100" cy="70" r="3" />
+                            </svg>
+
+                            <!-- SVG para el vaso con hielo -->
+                            <svg id="iceGlassSvg" viewBox="0 0 200 200">
+                                <rect x="70" y="50" width="60" height="120" rx="5" ry="5" stroke="#555" fill="none" />
+                                <path d="M70 50 Q100 40 130 50" stroke="#555" fill="none" stroke-width="2" />
+                                <rect class="ice" x="75" y="60" width="20" height="20" rx="3" ry="3" />
+                                <rect class="ice" x="100" y="65" width="22" height="22" rx="3" ry="3" />
+                                <rect class="ice" x="85" y="85" width="18" height="18" rx="3" ry="3" />
+                                <rect class="ice" x="78" y="105" width="25" height="25" rx="3" ry="3" />
+                                <rect class="ice" x="105" y="95" width="15" height="15" rx="3" ry="3" />
+                                <rect class="ice" x="90" y="125" width="20" height="20" rx="3" ry="3" />
+                                <rect class="ice" x="75" y="145" width="22" height="22" rx="3" ry="3" />
+                                <rect class="ice" x="100" y="150" width="18" height="18" rx="3" ry="3" />
+                            </svg>
+
+                            <!-- SVG para el vaso limpio -->
+                            <svg id="cleanGlassSvg" viewBox="0 0 200 200">
+                                <rect x="70" y="50" width="60" height="120" rx="5" ry="5" stroke="#555" fill="none" />
+                                <path d="M70 50 Q100 40 130 50" stroke="#555" fill="none" stroke-width="2" />
+                                <path d="M80 60 L85 55 L90 60" stroke="#ADD8E6" stroke-width="2" opacity="0.8"/>
+                                <path d="M110 70 L115 65 L120 70" stroke="#ADD8E6" stroke-width="2" opacity="0.8"/>
+                            </svg>
+
+                            <!-- SVG para el sabor -->
+                            <svg id="flavorSvg" viewBox="0 0 200 200">
+                                <circle class="face" cx="100" cy="100" r="60" />
+                                <circle class="eye" cx="75" cy="85" r="8" />
+                                <circle class="eye" cx="125" cy="85" r="8" />
+                                <path d="M70 120 Q100 140 130 120" stroke="#555" stroke-width="3" fill="none" />
+                                <path class="tongue" d="M100 135 Q110 145 100 155 Q90 145 100 135 Z" />
+                            </svg>
+
+                            <!-- Nuevo SVG para las palomitas (oculto por defecto) -->
+                            <svg id="popcornSvg" viewBox="0 0 200 200">
+                                <!-- Bolsa de palomitas -->
+                                <rect x="60" y="80" width="80" height="100" rx="5" ry="5" fill="#FFD700" stroke="#555" stroke-width="2" />
+                                <path d="M60 80 Q70 60 100 60 Q130 60 140 80" fill="#FFD700" stroke="#555" stroke-width="2" />
+                                <!-- Rayas rojas en la bolsa -->
+                                <line x1="75" y1="80" x2="70" y2="180" stroke="red" stroke-width="5" />
+                                <line x1="95" y1="80" x2="90" y2="180" stroke="red" stroke-width="5" />
+                                <line x1="115" y1="80" x2="110" y2="180" stroke="red" stroke-width="5" />
+                                <!-- Palomitas saliendo -->
+                                <circle cx="80" cy="70" r="10" fill="#FFF8DC" stroke="#555" stroke-width="1" />
+                                <circle cx="120" cy="75" r="12" fill="#FFF8DC" stroke="#555" stroke-width="1" />
+                                <circle cx="100" cy="55" r="11" fill="#FFF8DC" stroke="#555" stroke-width="1" />
+                                <circle cx="70" cy="95" r="9" fill="#FFF8DC" stroke="#555" stroke-width="1" />
+                                <circle cx="130" cy="90" r="10" fill="#FFF8DC" stroke="#555" stroke-width="1" />
+                            </svg>
+
+                            <!-- Nuevo SVG para el termómetro (oculto por defecto) -->
+                            <svg id="thermometerSvg" viewBox="0 0 200 200">
+                                <!-- Base del termómetro -->
+                                <rect x="90" y="50" width="20" height="100" rx="10" ry="10" stroke="#555" fill="#f0f0f0" />
+                                <!-- Bulbo del termómetro -->
+                                <circle cx="100" cy="160" r="15" stroke="#555" fill="#f0f0f0" />
+                                <!-- Líquido rojo (alta temperatura) -->
+                                <rect x="94" y="60" width="12" height="95" class="liquid-fill" />
+                                <circle cx="100" cy="160" r="10" class="liquid-fill" />
+                                <!-- Marcas del termómetro -->
+                                <line x1="85" y1="70" x2="90" y2="70" stroke="#555" stroke-width="1" />
+                                <line x1="85" y1="90" x2="90" y2="90" stroke="#555" stroke-width="1" />
+                                <line x1="85" y1="110" x2="90" y2="110" stroke="#555" stroke-width="1" />
+                                <line x1="85" y1="130" x2="90" y2="130" stroke="#555" stroke-width="1" />
+                            </svg>
+
+                            <!-- Nuevo SVG para la textura crujiente (oculto por defecto) -->
+                            <svg id="crunchySvg" viewBox="0 0 200 200">
+                                <!-- Lupa -->
+                                <circle class="magnifying-glass" cx="100" cy="80" r="40" />
+                                <line class="handle" x1="130" y1="110" x2="160" y2="140" />
+                                <!-- Superficie texturizada -->
+                                <path class="texture-line" d="M60 140 Q80 130 100 140 T140 140" />
+                                <path class="texture-line" d="M65 150 Q85 140 105 150 T145 150" />
+                                <path class="texture-line" d="M70 160 Q90 150 110 160 T150 160" />
+                                <path class="texture-line" d="M75 170 Q95 160 115 170 T155 170" />
+                            </svg>
+
+                            <!-- Nuevo SVG para palomita completa (tamaño) -->
+                            <svg id="fullPopcornSvg" viewBox="0 0 200 200">
+                                <circle class="kernel" cx="100" cy="100" r="60" />
+                                <path class="kernel" d="M100 40 Q120 20 140 40 T160 60 Q180 80 160 100 T140 120 Q120 140 100 120 T80 140 Q60 120 40 100 T20 80 Q40 60 60 40 T100 40 Z" />
+                                <path class="kernel" d="M100 100 Q110 90 120 100 T100 110 Q90 120 80 110 T100 100 Z" />
+                            </svg>
+
+                            <!-- Nuevo SVG para la entrega (no tocar la canasta) -->
+                            <svg id="deliverySvg" viewBox="0 0 200 200">
+                                <!-- Canasta de palomitas -->
+                                <rect class="basket" x="60" y="100" width="80" height="60" rx="5" ry="5" />
+                                <path class="basket" d="M60 100 Q70 80 100 80 Q130 80 140 100" />
+                                <!-- Manos flotando (sin tocar) -->
+                                <path class="hand" d="M50 70 Q60 60 70 70 L75 80 L65 90 Q55 80 50 70 Z" />
+                                <path class="hand" d="M150 70 Q140 60 130 70 L125 80 L135 90 Q145 80 150 70 Z" />
+                                <!-- Símbolo de "no" sobre la canasta -->
+                                <circle class="no-circle" cx="100" cy="100" r="40" />
+                                <line class="no-line" x1="70" y1="70" x2="130" y2="130" />
+                            </svg>
+
+
+                            <!-- Palabra a adivinar -->
+                            <div class="word-display" id="wordDisplay"></div>
+                            <!-- Letras incorrectas adivinadas -->
+                            <div class="incorrect-letters" id="incorrectLetters">Letras incorrectas:</div>
+                        </div>
+                        <!-- Botones del alfabeto para adivinar -->
+                        <div class="alphabet-buttons" id="alphabetButtons"></div>
+                        <!-- Mensaje de estado del juego -->
+                        <div class="message" id="gameMessage">Adivina la palabra. ¡Buena suerte!</div>
+                        <!-- Botón de reinicio -->
+                        <button class="reset-button" id="resetButton"><i class="fas fa-redo"></i> Reiniciar Juego</button>
+                        <button class="submenu-button" onclick="showCategory('dulceria')" style="margin-top: 20px;">
+                            <i class="fas fa-arrow-left"></i> Volver a Dulcería
+                        </button>
+                    </div>
+                `;
+                initializeHangmanGame(); // Re-inicializar el juego del ahorcado
+            }
+        }
+
+        /**
+         * Vuelve al menú principal.
+         */
+        function goBackToMainMenu() {
+            mainTitle.textContent = 'Bienvenido al Menú Principal';
+            mainMenu.style.display = 'flex'; // Mostrar menú principal
+            contentArea.innerHTML = `
+                <div class="welcome-message">
+                    <i class="fas fa-hand-pointer icon"></i>
+                    <h2>¡Hola!</h2>
+                    <p>Selecciona una opción del menú principal para comenzar.</p>
+                </div>
+            `;
+        }
+
+        // --- Lógica del Juego del Ahorcado (integrada) ---
+        // Definición de las palabras del juego de Bebidas
+        const drinksWordsData = [
+            {
+                phrase: "NIVEL DE LÍQUIDO",
+                winMessageExtra: "Un centímetro por debajo del borde superior.",
+                winSvgId: "sodaGlassSvg"
+            },
+            {
+                phrase: "EFERVESCENCIA",
+                winMessageExtra: "Garantizar que el cilindro de Co2 esté por arriba de 600 psi.",
+                winSvgId: "bubblingGlassSvg"
+            },
+            {
+                phrase: "FRESCURA",
+                winMessageExtra: "-Validar fecha de vencimiento del jarabe. -Servir 12 onz de hielo en el vaso. - Bin de hielo al menos a 1/3 de su capacidad.",
+                winSvgId: "iceGlassSvg"
+            },
+            {
+                phrase: "VASO",
+                winMessageExtra: "El exterior del vaso deberá estar limpio.",
+                winSvgId: "cleanGlassSvg"
+            },
+            {
+                phrase: "SABOR",
+                winMessageExtra: "-Sin olores desagradables. -Verificar la etiqueta en el BIB y la manguera conectada sean del mismo sabor. -Ninguna manguera de jarabe debe estar sucia o doblada.",
+                winSvgId: "flavorSvg"
+            }
+        ];
+
+        // Definición de las palabras del juego de Palomitas
+        const popcornWordsData = [
+            {
+                phrase: "TEMPERATURA",
+                winMessageExtra: "Calientes",
+                winSvgId: "thermometerSvg"
+            },
+            {
+                phrase: "TEXTURA",
+                winMessageExtra: "Crujientes",
+                winSvgId: "crunchySvg"
+            },
+            {
+                phrase: "SABOR",
+                winMessageExtra: "No quemadas y que el sabor coincidan con el copete.",
+                winSvgId: "flavorSvg"
+            },
+            {
+                phrase: "TAMAÑO",
+                winMessageExtra: "Completas",
+                winSvgId: "fullPopcornSvg"
+            },
+            {
+                phrase: "SERVIDO",
+                winMessageExtra: "Copetadas y directo de la palomera. *Solo la canasta para llevar debe servirse al ras y entregar cerrada al cliente.",
+                winSvgId: "popcornSvg"
+            },
+            {
+                phrase: "ENTREGA",
+                winMessageExtra: "No tener contacto con el interior de la canasta.",
+                winSvgId: "deliverySvg"
+            }
+        ];
+
+
+        // Variable global para el conjunto de palabras activo del juego del ahorcado
+        let activeHangmanWordsData = [];
+        let currentHangmanGameType = ''; // 'bebidas' o 'palomitas'
+
+        // Variables del juego del ahorcado (declaradas globalmente o pasadas a la función de inicialización)
+        let hangmanSvg, sodaGlassSvg, bubblingGlassSvg, iceGlassSvg, cleanGlassSvg, flavorSvg, popcornSvg, thermometerSvg, crunchySvg, fullPopcornSvg, deliverySvg;
+        let wordDisplay, incorrectLettersDisplay, alphabetButtonsContainer, gameMessage, resetButton, resetButtonIcon;
+
+        let currentWordIndex = 0;
+        let secretWord = '';
+        let originalSecretPhrase = '';
+        let guessedLetters = new Set();
+        let incorrectGuesses = 0;
+        const maxIncorrectGuesses = 10;
+        let gameWon = false;
+        let allWordsCompleted = false;
+
+        const hangmanParts = [
+            'base', 'post', 'beam', 'rope', 'head', 'body', 'arm-left', 'arm-right', 'leg-left', 'leg-right'
+        ];
+
+        /**
+         * Inicializa el juego del ahorcado. Se llama cuando se carga el juego.
+         */
+        function initializeHangmanGame() {
+            // Re-obtener referencias a los elementos del DOM del juego del ahorcado
+            hangmanSvg = document.getElementById('hangmanSvg');
+            sodaGlassSvg = document.getElementById('sodaGlassSvg');
+            bubblingGlassSvg = document.getElementById('bubblingGlassSvg');
+            iceGlassSvg = document.getElementById('iceGlassSvg');
+            cleanGlassSvg = document.getElementById('cleanGlassSvg');
+            flavorSvg = document.getElementById('flavorSvg');
+            popcornSvg = document.getElementById('popcornSvg');
+            thermometerSvg = document.getElementById('thermometerSvg');
+            crunchySvg = document.getElementById('crunchySvg');
+            fullPopcornSvg = document.getElementById('fullPopcornSvg');
+            deliverySvg = document.getElementById('deliverySvg'); // Obtener referencia al nuevo SVG
+
+            wordDisplay = document.getElementById('wordDisplay');
+            incorrectLettersDisplay = document.getElementById('incorrectLetters');
+            alphabetButtonsContainer = document.getElementById('alphabetButtons');
+            gameMessage = document.getElementById('gameMessage');
+            resetButton = document.getElementById('resetButton');
+            resetButtonIcon = resetButton.querySelector('i');
+
+            // Asegurarse de que solo haya un listener para el botón de reinicio/continuar
+            resetButton.removeEventListener('click', startGameHangman); // Remover cualquier listener anterior
+            resetButton.addEventListener('click', startGameHangman); // Añadir el listener
+
+            // Reiniciar el estado del juego del ahorcado
+            currentWordIndex = 0; // Siempre empezar desde la primera palabra del ahorcado al entrar en un juego
+            gameWon = false;
+            allWordsCompleted = false;
+            startGameHangman(); // Iniciar el juego del ahorcado
+        }
+
+        /**
+         * Normaliza una cadena para comparación (elimina acentos y convierte a mayúsculas).
+         * @param {string} str La cadena a normalizar.
+         * @returns {string} La cadena normalizada.
+         */
+        function normalizeString(str) {
+            return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
+        }
+
+        /**
+         * Inicia o reinicia una ronda del juego del ahorcado.
+         * Determina qué palabra cargar y restablece el estado de la ronda.
+         */
+        function startGameHangman() {
+            if (gameWon) {
+                currentWordIndex++;
+                gameWon = false;
+            }
+
+            if (currentWordIndex >= activeHangmanWordsData.length) {
+                allWordsCompleted = true;
+                displayFinalHangmanWinScreen();
+                return;
+            }
+
+            allWordsCompleted = false;
+
+            const currentWordData = activeHangmanWordsData[currentWordIndex];
+            secretWord = normalizeString(currentWordData.phrase);
+            originalSecretPhrase = currentWordData.phrase;
+
+            guessedLetters.clear();
+            incorrectGuesses = 0;
+
+            // Ocultar todos los SVGs
+            hangmanSvg.style.display = 'none';
+            sodaGlassSvg.style.display = 'none';
+            bubblingGlassSvg.style.display = 'none';
+            iceGlassSvg.style.display = 'none';
+            cleanGlassSvg.style.display = 'none';
+            flavorSvg.style.display = 'none';
+            popcornSvg.style.display = 'none';
+            thermometerSvg.style.display = 'none';
+            crunchySvg.style.display = 'none';
+            fullPopcornSvg.style.display = 'none';
+            deliverySvg.style.display = 'none'; // Ocultar el nuevo SVG
+
+            // Mostrar el ahorcado al inicio de cada ronda
+            hangmanSvg.style.display = 'block';
+
+            resetButton.textContent = 'Reiniciar Juego';
+            resetButtonIcon.className = 'fas fa-redo';
+
+            hangmanParts.forEach(partId => {
+                const part = document.getElementById(partId);
+                if (part) part.classList.remove('visible');
+            });
+
+            const initialVisibleParts = ['base', 'post', 'beam', 'rope'];
+            initialVisibleParts.forEach(partId => {
+                const part = document.getElementById(partId);
+                if (part) part.classList.add('visible');
+            });
+
+            updateWordDisplay();
+            updateIncorrectLettersDisplay();
+            createAlphabetButtons();
+            gameMessage.textContent = 'Adivina la palabra. ¡Buena suerte!';
+            gameMessage.style.color = '#4682b4';
+        }
+
+        /**
+         * Muestra la pantalla final de victoria del ahorcado.
+         */
+        function displayFinalHangmanWinScreen() {
+            gameMessage.textContent = `¡Felicidades! ¡Has completado todas las palabras del juego de ${currentHangmanGameType === 'bebidas' ? 'Bebidas' : 'Palomitas'}! 🎉`;
+            gameMessage.style.color = '#28a745';
+            disableAlphabetButtons();
+
+            // Ocultar todos los SVGs
+            hangmanSvg.style.display = 'none';
+            sodaGlassSvg.style.display = 'none';
+            bubblingGlassSvg.style.display = 'none';
+            iceGlassSvg.style.display = 'none';
+            cleanGlassSvg.style.display = 'none';
+            flavorSvg.style.display = 'none';
+            popcornSvg.style.display = 'none';
+            thermometerSvg.style.display = 'none';
+            crunchySvg.style.display = 'none';
+            fullPopcornSvg.style.display = 'none';
+            deliverySvg.style.display = 'none'; // Ocultar el nuevo SVG
+
+            resetButton.textContent = `Volver a Jugar ${currentHangmanGameType === 'bebidas' ? 'Bebidas' : 'Palomitas'}`;
+            resetButtonIcon.className = 'fas fa-sync-alt';
+            currentWordIndex = 0; // Reset index for next full game of hangman
+        }
+
+        /**
+         * Actualiza la visualización de la palabra oculta.
+         */
+        function updateWordDisplay() {
+            wordDisplay.innerHTML = '';
+
+            originalSecretPhrase.split('').forEach(char => {
+                const span = document.createElement('span');
+                span.classList.add('word-letter');
+
+                if (char === ' ') {
+                    span.textContent = ' ';
+                    span.classList.add('space');
+                } else if (guessedLetters.has(normalizeString(char))) {
+                    span.textContent = char;
+                } else {
+                    span.textContent = '_';
+                }
+                wordDisplay.appendChild(span);
+            });
+        }
+
+        /**
+         * Actualiza la visualización de las letras incorrectas adivinadas.
+         */
+        function updateIncorrectLettersDisplay() {
+            const incorrect = Array.from(guessedLetters).filter(letter => !secretWord.includes(letter));
+            incorrectLettersDisplay.textContent = `Letras incorrectas: ${incorrect.join(', ')}`;
+        }
+
+        /**
+         * Muestra la siguiente parte del dibujo del ahorcado.
+         */
+        function drawHangmanPart() {
+            const partIndexToShow = incorrectGuesses + 3;
+
+            if (partIndexToShow >= 0 && partIndexToShow < hangmanParts.length) {
+                const partId = hangmanParts[partIndexToShow];
+                const part = document.getElementById(partId);
+                if (part) {
+                    part.classList.add('visible');
+                }
+            }
+        }
+
+        /**
+         * Crea los botones para cada letra del alfabeto.
+         */
+        function createAlphabetButtons() {
+            alphabetButtonsContainer.innerHTML = '';
+
+            for (let i = 65; i <= 90; i++) {
+                const letter = String.fromCharCode(i);
+                const button = document.createElement('button');
+                button.classList.add('alphabet-button');
+                button.textContent = letter;
+                button.dataset.letter = letter;
+
+                button.addEventListener('click', () => handleGuess(letter, button));
+                alphabetButtonsContainer.appendChild(button);
+            }
+        }
+
+        /**
+         * Maneja la lógica cuando el usuario adivina una letra.
+         */
+        function handleGuess(letter, button) {
+            const normalizedLetter = normalizeString(letter);
+
+            if (guessedLetters.has(normalizedLetter) || incorrectGuesses >= maxIncorrectGuesses || gameWon || allWordsCompleted) {
+                return;
+            }
+
+            guessedLetters.add(normalizedLetter);
+            button.disabled = true;
+
+            if (secretWord.includes(normalizedLetter)) {
+                updateWordDisplay();
+                gameMessage.textContent = `¡Bien! La letra "${letter}" está en la palabra.`;
+                gameMessage.style.color = '#28a745';
+            } else {
+                incorrectGuesses++;
+                drawHangmanPart();
+                updateIncorrectLettersDisplay();
+                gameMessage.textContent = `¡Oh no! La letra "${letter}" no está. Te quedan ${maxIncorrectGuesses - incorrectGuesses} intentos.`;
+                gameMessage.style.color = '#dc3545';
+            }
+
+            checkGameStatusHangman();
+        }
+
+        /**
+         * Verifica el estado actual del juego del ahorcado (ganado o perdido).
+         */
+        function checkGameStatusHangman() {
+            const allLettersGuessed = secretWord.split('')
+                                                .filter(char => char !== ' ')
+                                                .every(char => guessedLetters.has(char));
+
+            if (allLettersGuessed) {
+                const currentWordData = activeHangmanWordsData[currentWordIndex];
+                gameMessage.textContent = `¡Felicidades! ¡Has adivinado la palabra: "${currentWordData.phrase}"! 🎉 ${currentWordData.winMessageExtra}`;
+                gameMessage.style.color = '#28a745';
+                disableAlphabetButtons();
+
+                // Ocultar todos los SVGs y mostrar el SVG de victoria específico
+                hangmanSvg.style.display = 'none';
+                sodaGlassSvg.style.display = 'none';
+                bubblingGlassSvg.style.display = 'none';
+                iceGlassSvg.style.display = 'none';
+                cleanGlassSvg.style.display = 'none';
+                flavorSvg.style.display = 'none';
+                popcornSvg.style.display = 'none';
+                thermometerSvg.style.display = 'none';
+                crunchySvg.style.display = 'none';
+                fullPopcornSvg.style.display = 'none';
+                deliverySvg.style.display = 'none'; // Asegurarse de que este también se oculte
+                document.getElementById(currentWordData.winSvgId).style.display = 'block';
+
+                gameWon = true;
+                if (currentWordIndex < activeHangmanWordsData.length - 1) {
+                    resetButton.textContent = 'Continuar Juego';
+                    resetButtonIcon.className = 'fas fa-forward';
+                } else {
+                    resetButton.textContent = 'Finalizar Juego';
+                    resetButtonIcon.className = 'fas fa-check';
+                }
+
+            } else if (incorrectGuesses >= maxIncorrectGuesses) {
+                gameMessage.textContent = `¡Juego Terminado! La palabra era: "${originalSecretPhrase}". 😔`;
+                gameMessage.style.color = '#dc3545';
+                disableAlphabetButtons();
+            }
+        }
+
+        /**
+         * Deshabilita todos los botones del alfabeto.
+         */
+        function disableAlphabetButtons() {
+            Array.from(alphabetButtonsContainer.children).forEach(button => {
+                button.disabled = true;
+            });
+        }
+
+        // Initial setup for the main menu when the window loads
+        window.onload = goBackToMainMenu;
+    </script>
+</body>
+</html>
