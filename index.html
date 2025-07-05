@@ -1414,11 +1414,8 @@
                 </div>
 
                 <div class="content-area" id="popcornContentArea">
-                    <div class="welcome-message">
-                        <i class="icon fas fa-film"></i>
-                        <h2>¡Elige una categoría para empezar a jugar!</h2>
-                        <p>Adivina palabras relacionadas con tus productos favoritos de dulcería y operaciones de cine.</p>
-                    </div>
+                    <!-- El contenido del juego se cargará aquí al seleccionar una categoría.
+                         Esta área se mantiene vacía inicialmente al cargar la pestaña "Juegos Popcorn". -->
                 </div>
             </div>
         </div>
@@ -1429,42 +1426,53 @@
         function showTab(tabId) {
             console.log(`showTab called with tabId: ${tabId}`); // Debugging
 
-            // Remove 'active' from all tab buttons and content
-            document.querySelectorAll('.tab-button').forEach(button => {
-                button.classList.remove('active');
-            });
+            // Hide all tab contents explicitly
             document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
+                if (content.classList.contains('active')) {
+                    content.classList.remove('active');
+                    console.log(`Tab content '${content.id}' deactivated.`);
+                }
+                content.style.display = 'none'; // Explicitly hide via inline style
             });
 
-            // Add 'active' to the correct tab button and content
-            const activeButton = document.querySelector(`.tab-button[data-tab-id="${tabId}"]`);
+            // Show the active tab content explicitly
             const activeContent = document.getElementById(tabId);
-
-            if (activeButton) {
-                activeButton.classList.add('active');
-                console.log(`Tab button '${tabId}' activated.`); // Debugging
-            } else {
-                console.error(`ERROR: Tab button not found for: ${tabId}`); // Debugging
-            }
-
             if (activeContent) {
                 activeContent.classList.add('active');
-                console.log(`Tab content '${tabId}' activated.`); // Debugging
+                activeContent.style.display = 'block'; // Explicitly show via inline style
+                console.log(`Tab content '${tabId}' activated.`);
             } else {
                 console.error(`ERROR: Tab content not found for: ${tabId}`); // Debugging
             }
 
+            // Activate the corresponding tab button (if visible/relevant)
+            document.querySelectorAll('.tab-button').forEach(button => {
+                if (button.dataset.tabId === tabId) {
+                    button.classList.add('active');
+                    console.log(`Tab button '${tabId}' activated.`); // Debugging
+                } else {
+                    button.classList.remove('active');
+                }
+            });
+
             // Specific initialization for tabs when they are opened
             if (tabId === 'notificationsTab') {
+                console.log("Calling initializeNotificationsTab()");
                 initializeNotificationsTab();
             } else if (tabId === 'popcornGamesTab') {
+                console.log("Calling initializePopcornGamesTab()");
                 initializePopcornGamesTab();
             }
         }
 
         document.addEventListener('DOMContentLoaded', () => {
             console.log("main-report-page.html script loaded."); // Debugging
+
+            // Explicitly hide all tab contents first to ensure a clean state on load
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+                content.style.display = 'none'; // Ensure it's hidden via inline style too, for robustness
+            });
 
             // Add event listeners to main navigation tab buttons (top) - though hidden, they still handle clicks if exposed
             document.querySelectorAll('.tabs-container .tab-button').forEach(button => {
@@ -2476,14 +2484,10 @@
             const popcornMainMenu = document.getElementById('popcornMainMenu');
             const popcornContentArea = document.getElementById('popcornContentArea');
 
-            // Initial welcome message
-            popcornContentArea.innerHTML = `
-                <div class="welcome-message">
-                    <i class="icon fas fa-film"></i>
-                    <h2>¡Elige una categoría para empezar a jugar!</h2>
-                    <p>Adivina palabras relacionadas con tus productos favoritos de dulcería y operaciones de cine.</p>
-                </div>
-            `;
+            // Clear content area, set title, and ensure main menu is visible.
+            // The content area remains empty initially. The welcome message is added
+            // only when returning to this main game menu via popcornGoBackToPopcornMainMenu().
+            popcornContentArea.innerHTML = ''; 
             popcornMainTitle.textContent = 'Bienvenido al Menú de Juegos Popcorn';
             popcornMainMenu.style.display = 'flex'; // Ensure main menu is visible
 
@@ -2542,9 +2546,9 @@
                 }
 
                 // Hide all hangman parts
-                hangmanParts.forEach(partId => {
-                    const part = document.querySelector(`#popcornGamesTab #hangmanSvg #${partId}`);
-                    if (part) part.classList.remove('visible');
+                hangmanParts.forEach(part => {
+                    const svgPart = document.querySelector(`#popcornGamesTab #hangmanSvg #${part}`);
+                    if (svgPart) svgPart.classList.remove('visible');
                 });
 
                 updateWordDisplay();
@@ -2843,162 +2847,6 @@
                         </div>
                     `;
                     initializeHangmanGame();
-                } else if (contentType === 'palomitas') {
-                    popcornMainTitle.textContent = 'Juego del Ahorcado: Palomitas';
-                    activeHangmanWordsData = popcornWordsData; // Establecer la lista de palabras activa para palomitas
-                    currentHangmanGameType = 'palomitas';
-                    // Insertar el HTML del juego del ahorcado (es el mismo HTML, solo cambia la lógica JS)
-                    popcornContentArea.innerHTML = `
-                        <div class="hangman-game-container">
-                            <h1>Juego del Ahorcado</h1>
-                            <div class="game-display">
-                                <!-- SVG para el dibujo del ahorcado -->
-                                <svg id="hangmanSvg" viewBox="0 0 200 200">
-                                    <path id="base" d="M10 190 L190 190" />
-                                    <path id="post" d="M50 190 L50 10" />
-                                    <path id="beam" d="M50 10 L150 10" />
-                                    <path id="rope" d="M150 10 L150 50" />
-                                    <path id="head" d="M125 100 A25 25 0 1 0 175 100 A25 25 0 1 0 125 100" />
-                                    <path id="body" d="M150 100 L150 160" />
-                                    <path id="arm-left" d="M150 120 L120 140" />
-                                    <path id="arm-right" d="M150 120 L180 140" />
-                                    <path id="leg-left" d="M150 160 L130 180" />
-                                    <path id="leg-right" d="M150 160 L170 180" />
-                                </svg>
-
-                                <!-- SVG para el dibujo del vaso de gaseosa -->
-                                <svg id="sodaGlassSvg" viewBox="0 0 200 200">
-                                    <rect x="70" y="50" width="60" height="120" rx="5" ry="5" stroke="#555" fill="none" />
-                                    <path d="M70 50 Q100 40 130 50" stroke="#555" fill="none" stroke-width="2" />
-                                    <path class="liquid" d="M70 60 Q100 55 130 60 L130 170 L70 170 Z" />
-                                </svg>
-
-                                <!-- SVG para el dibujo del vaso burbujeante -->
-                                <svg id="bubblingGlassSvg" viewBox="0 0 200 200">
-                                    <rect x="70" y="50" width="60" height="120" rx="5" ry="5" stroke="#555" fill="none" />
-                                    <path d="M70 50 Q100 40 130 50" stroke="#555" fill="none" stroke-width="2" />
-                                    <path class="liquid" d="M70 60 Q100 55 130 60 L130 170 L70 170 Z" />
-                                    <circle class="bubble" cx="80" cy="150" r="3" />
-                                    <circle class="bubble" cx="95" cy="130" r="4" />
-                                    <circle class="bubble" cx="110" cy="110" r="3.5" />
-                                    <circle class="bubble" cx="85" cy="90" r="2.5" />
-                                    <circle class="bubble" cx="120" cy="80" r="4.5" />
-                                    <circle class="bubble" cx="100" cy="70" r="3" />
-                                </svg>
-
-                                <!-- SVG para el vaso con hielo -->
-                                <svg id="iceGlassSvg" viewBox="0 0 200 200">
-                                    <rect x="70" y="50" width="60" height="120" rx="5" ry="5" stroke="#555" fill="none" />
-                                    <path d="M70 50 Q100 40 130 50" stroke="#555" fill="none" stroke-width="2" />
-                                    <rect class="ice" x="75" y="60" width="20" height="20" rx="3" ry="3" />
-                                    <rect class="ice" x="100" y="65" width="22" height="22" rx="3" ry="3" />
-                                    <rect class="ice" x="85" y="85" width="18" height="18" rx="3" ry="3" />
-                                    <rect class="ice" x="78" y="105" width="25" height="25" rx="3" ry="3" />
-                                    <rect class="ice" x="105" y="95" width="15" height="15" rx="3" ry="3" />
-                                    <rect class="ice" x="90" y="125" width="20" height="20" rx="3" ry="3" />
-                                    <rect class="ice" x="75" y="145" width="22" height="22" rx="3" ry="3" />
-                                    <rect class="ice" x="100" y="150" width="18" height="18" rx="3" ry="3" />
-                                </svg>
-
-                                <!-- SVG para el vaso limpio -->
-                                <svg id="cleanGlassSvg" viewBox="0 0 200 200">
-                                    <rect x="70" y="50" width="60" height="120" rx="5" ry="5" stroke="#555" fill="none" />
-                                    <path d="M70 50 Q100 40 130 50" stroke="#555" fill="none" stroke-width="2" />
-                                    <path d="M80 60 L85 55 L90 60" stroke="#ADD8E6" stroke-width="2" opacity="0.8"/>
-                                    <path d="M110 70 L115 65 L120 70" stroke="#ADD8E6" stroke-width="2" opacity="0.8"/>
-                                </svg>
-
-                                <!-- SVG para el sabor -->
-                                <svg id="flavorSvg" viewBox="0 0 200 200">
-                                    <circle class="face" cx="100" cy="100" r="60" />
-                                    <circle class="eye" cx="75" cy="85" r="8" />
-                                    <circle class="eye" cx="125" cy="85" r="8" />
-                                    <path d="M70 120 Q100 140 130 120" stroke="#555" stroke-width="3" fill="none" />
-                                    <path class="tongue" d="M100 135 Q110 145 100 155 Q90 145 100 135 Z" />
-                                </svg>
-
-                                <!-- Nuevo SVG para las palomitas (oculto por defecto) -->
-                                <svg id="popcornSvg" viewBox="0 0 200 200">
-                                    <!-- Bolsa de palomitas -->
-                                    <rect x="60" y="80" width="80" height="100" rx="5" ry="5" fill="#FFD700" stroke="#555" stroke-width="2" />
-                                    <path d="M60 80 Q70 60 100 60 Q130 60 140 80" fill="#FFD700" stroke="#555" stroke-width="2" />
-                                    <!-- Rayas rojas en la bolsa -->
-                                    <line x1="75" y1="80" x2="70" y2="180" stroke="red" stroke-width="5" />
-                                    <line x1="95" y1="80" x2="90" y2="180" stroke="red" stroke-width="5" />
-                                    <line x1="115" y1="80" x2="110" y2="180" stroke="red" stroke-width="5" />
-                                    <!-- Palomitas saliendo -->
-                                    <circle cx="80" cy="70" r="10" fill="#FFF8DC" stroke="#555" stroke-width="1" />
-                                    <circle cx="120" cy="75" r="12" fill="#FFF8DC" stroke="#555" stroke-width="1" />
-                                    <circle cx="100" cy="55" r="11" fill="#FFF8DC" stroke="#555" stroke-width="1" />
-                                    <circle cx="70" cy="95" r="9" fill="#FFF8DC" stroke="#555" stroke-width="1" />
-                                    <circle cx="130" cy="90" r="10" fill="#FFF8DC" stroke="#555" stroke-width="1" />
-                                </svg>
-
-                                <!-- Nuevo SVG para el termómetro (oculto por defecto) -->
-                                <svg id="thermometerSvg" viewBox="0 0 200 200">
-                                    <!-- Base del termómetro -->
-                                    <rect x="90" y="50" width="20" height="100" rx="10" ry="10" stroke="#555" fill="#f0f0f0" />
-                                    <!-- Bulbo del termómetro -->
-                                    <circle cx="100" cy="160" r="15" stroke="#555" fill="#f0f0f0" />
-                                    <!-- Líquido rojo (alta temperatura) -->
-                                    <rect x="94" y="60" width="12" height="95" class="liquid-fill" />
-                                    <circle cx="100" cy="160" r="10" class="liquid-fill" />
-                                    <!-- Marcas del termómetro -->
-                                    <line x1="85" y1="70" x2="90" y2="70" stroke="#555" stroke-width="1" />
-                                    <line x1="85" y1="90" x2="90" y2="90" stroke="#555" stroke-width="1" />
-                                    <line x1="85" y1="110" x2="90" y2="110" stroke="#555" stroke-width="1" />
-                                    <line x1="85" y1="130" x2="90" y2="130" stroke="#555" stroke-width="1" />
-                                </svg>
-
-                                <!-- Nuevo SVG para la textura crujiente (oculto por defecto) -->
-                                <svg id="crunchySvg" viewBox="0 0 200 200">
-                                    <!-- Lupa -->
-                                    <circle class="magnifying-glass" cx="100" cy="80" r="40" />
-                                    <line class="handle" x1="130" y1="110" x2="160" y2="140" />
-                                    <!-- Superficie texturizada -->
-                                    <path class="texture-line" d="M60 140 Q80 130 100 140 T140 140" />
-                                    <path class="texture-line" d="M65 150 Q85 140 105 150 T145 150" />
-                                    <path class="texture-line" d="M70 160 Q90 150 110 160 T150 160" />
-                                    <path class="texture-line" d="M75 170 Q95 160 115 170 T155 170" />
-                                </svg>
-
-                                <!-- Nuevo SVG para palomita completa (tamaño) -->
-                                <svg id="fullPopcornSvg" viewBox="0 0 200 200">
-                                    <circle class="kernel" cx="100" cy="100" r="60" />
-                                    <path class="kernel" d="M100 40 Q120 20 140 40 T160 60 Q180 80 160 100 T140 120 Q120 140 100 120 T80 140 Q60 120 40 100 T20 80 Q40 60 60 40 T100 40 Z" />
-                                    <path class="kernel" d="M100 100 Q110 90 120 100 T100 110 Q90 120 80 110 T100 100 Z" />
-                                </svg>
-
-                                <!-- Nuevo SVG para la entrega (no tocar la canasta) -->
-                                <svg id="deliverySvg" viewBox="0 0 200 200">
-                                    <!-- Canasta de palomitas -->
-                                    <rect class="basket" x="60" y="100" width="80" height="60" rx="5" ry="5" />
-                                    <path class="basket" d="M60 100 Q70 80 100 80 Q130 80 140 100" />
-                                    <!-- Manos flotando (sin tocar) -->
-                                    <path class="hand" d="M50 70 Q60 60 70 70 L75 80 L65 90 Q55 80 50 70 Z" />
-                                    <path class="hand" d="M150 70 Q140 60 130 70 L125 80 L135 90 Q145 80 150 70 Z" />
-                                    <!-- Símbolo de "no" sobre la canasta -->
-                                    <circle class="no-circle" cx="100" cy="100" r="40" />
-                                    <line class="no-line" x1="70" y1="70" x2="130" y2="130" />
-                                </svg>
-
-                                <!-- Palabra a adivinar -->
-                                <div class="word-display" id="wordDisplay"></div>
-                                <!-- Letras incorrectas adivinadas -->
-                                <div class="incorrect-letters" id="incorrectLetters">Letras incorrectas:</div>
-                            </div>
-                            <!-- Botones del alfabeto para adivinar -->
-                            <div class="alphabet-buttons" id="alphabetButtons"></div>
-                            <!-- Mensaje de estado del juego -->
-                            <div class="message" id="gameMessage">Adivina la palabra. ¡Buena suerte!</div>
-                            <!-- Botón de reinicio -->
-                            <button class="reset-button" id="resetButton"><i class="fas fa-redo"></i> Reiniciar Juego</button>
-                            <button class="submenu-button" onclick="popcornGoBackToPopcornMainMenu()" style="margin-top: 20px;">
-                                <i class="fas fa-arrow-left"></i> Volver al Menú de Juegos
-                            </button>
-                        </div>
-                    `;
-                    initializeHangmanGame();
                 }
                 // Attach reset button listener
                 const resetButton = document.getElementById('popcornGamesTab #resetButton');
@@ -3010,6 +2858,7 @@
             window.popcornGoBackToPopcornMainMenu = function() {
                 popcornMainTitle.textContent = 'Bienvenido al Menú de Juegos Popcorn';
                 popcornMainMenu.style.display = 'flex'; // Show main menu
+                // Restore the initial welcome message when returning to the main games menu
                 popcornContentArea.innerHTML = `
                     <div class="welcome-message">
                         <i class="icon fas fa-film"></i>
