@@ -1684,23 +1684,41 @@
                     }
                     const ctx = canvas.getContext("2d");
                     let dibujando = false;
-                    let firmado = false;
+                    // Retrieve 'firmado' state from dataset, default to false if not set
+                    let firmado = canvas.dataset.signed === 'true'; 
+
+                    // Store current image data if already signed
+                    let imageData = null;
+                    if (firmado) {
+                        imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    }
 
                     // Set canvas dimensions dynamically to be responsive
-                    // Aspect ratio (width / height). Smaller number means taller canvas.
-                    // From 3:1 (width:height) to 2.5:1 was some increase.
-                    // Now for double height, it should be 2.5 / 2 = 1.25
                     const aspectRatio = 1.25; // Adjusted aspect ratio to make it twice as tall
                     canvas.width = canvas.offsetWidth; // Set internal drawing buffer width to actual rendered width
                     canvas.height = canvas.width / aspectRatio; // Maintain aspect ratio
+
+                    // Clear canvas only if not signed, or redraw image data if signed
+                    if (!firmado) {
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    } else if (imageData) {
+                        // Redraw the saved image data onto the resized canvas
+                        // Create a temporary canvas to draw the old image data and then scale it
+                        const tempCanvas = document.createElement('canvas');
+                        const tempCtx = tempCanvas.getContext('2d');
+                        tempCanvas.width = imageData.width;
+                        tempCanvas.height = imageData.height;
+                        tempCtx.putImageData(imageData, 0, 0);
+
+                        ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear before redrawing scaled
+                        ctx.drawImage(tempCanvas, 0, 0, canvas.width, canvas.height);
+                    }
+
 
                     // Set stroke properties for the signature
                     ctx.lineWidth = 2;
                     ctx.lineCap = "round";
                     ctx.strokeStyle = "#334155"; // Dark gray color for consistency
-
-                    // Clear canvas and reset
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 
                     function obtenerCoordenadas(event) {
@@ -1712,7 +1730,7 @@
                     }
 
                     function iniciarDibujo(event) {
-                        if (firmado) return;
+                        if (canvas.dataset.signed === 'true') return; // Prevent drawing if already signed
                         event.preventDefault();
                         dibujando = true;
                         const { x, y } = obtenerCoordenadas(event);
@@ -1721,7 +1739,7 @@
                     }
 
                     function dibujar(event) {
-                        if (!dibujando || firmado) return;
+                        if (!dibujando || canvas.dataset.signed === 'true') return; // Prevent drawing if not drawing or already signed
                         event.preventDefault();
                         const { x, y } = obtenerCoordenadas(event);
                         ctx.lineTo(x, y);
@@ -1730,7 +1748,7 @@
 
                     function finalizarDibujo() {
                         dibujando = false;
-                        firmado = true;
+                        canvas.dataset.signed = 'true'; // Set dataset attribute to indicate signed
                         // Ensure the clear button is shown after signing
                         const clearButton = document.getElementById(`limpiar${id.charAt(0).toUpperCase() + id.slice(1)}`);
                         if (clearButton) {
@@ -1763,12 +1781,13 @@
                     if (!canvas) return;
                     const ctx = canvas.getContext("2d");
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    canvas.dataset.signed = 'false'; // Reset dataset attribute
                     const clearButton = document.getElementById(`limpiar${id.charAt(0).toUpperCase() + id.slice(1)}`);
                     if (clearButton) {
                         clearButton.classList.add("hidden");
                     }
                     // Reinitialize canvas to reset its internal state (dibujando, firmado) and redraw fresh
-                    inicializarCanvas(id);
+                    // No need to call inicializarCanvas here, as the resize listener will handle it, or it's ready for new drawing
                 }
 
                 // Handle evidence file loading
@@ -1823,7 +1842,13 @@
 
                 // Initial calls for all canvases and witness section
                 const canvasIds = ['firmaSupervisor', 'firmaEmpleado', 'firmaTestigo'];
-                canvasIds.forEach(id => inicializarCanvas(id));
+                canvasIds.forEach(id => {
+                    const canvas = document.getElementById(id);
+                    if (canvas) {
+                        canvas.dataset.signed = 'false'; // Initialize signed state
+                        inicializarCanvas(id);
+                    }
+                });
                 mostrarCamposTestigo(); // To handle the initial state of the select
 
                 // Add resize listener to re-initialize canvases when window is resized
@@ -1870,7 +1895,8 @@
                 }
                 doc.text(`${title}:`, 20, yPos);
                 const canvas = document.getElementById(canvasId);
-                if (canvas && canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data.some(channel => channel !== 0)) { // Check if canvas is not empty
+                // Only add image if canvas has been signed (data-signed is 'true')
+                if (canvas && canvas.dataset.signed === 'true') { 
                     const imgData = canvas.toDataURL("image/png");
                     doc.addImage(imgData, "PNG", 20, yPos + 10, 80, 30); // Image size adjusted
                     yPos += 45; // Space for signature and next text
