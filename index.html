@@ -896,6 +896,11 @@
                 <div class="evidencia" id="evidenciasContainer"></div>
                 
                 <button type="button" onclick="descargarPDF()">Descargar Reporte</button>
+
+                <!-- Custom Message Box for Notifications Tab -->
+                <div id="notificationMessageBox" class="message-box mt-4 hidden">
+                    <p><i class="fas fa-exclamation-triangle mr-2"></i></p>
+                </div>
             </div>
         </div>
     </div>
@@ -974,12 +979,28 @@
                 const currentSignatureBase64 = signatureData[id];
                 
                 // Set canvas dimensions dynamically to be responsive
+                // Use clientWidth for drawing buffer dimensions
                 const aspectRatio = 1.25; 
-                canvas.width = canvas.offsetWidth; 
-                canvas.height = canvas.width / aspectRatio; 
+                let targetWidth = canvas.clientWidth;
+                let targetHeight = targetWidth / aspectRatio; 
 
-                // Clear the canvas before drawing anything
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                // Fallback if clientWidth is 0 (e.g., element not yet rendered or briefly hidden)
+                if (targetWidth === 0 && canvas.offsetWidth > 0) {
+                    targetWidth = canvas.offsetWidth;
+                    targetHeight = canvas.offsetWidth / aspectRatio;
+                }
+                
+                // Only update canvas dimensions if they have changed significantly
+                // This prevents unnecessary clearing and redrawing if size is stable
+                if (canvas.width !== targetWidth || canvas.height !== targetHeight) {
+                    canvas.width = targetWidth;
+                    canvas.height = targetHeight;
+                    ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear only if resized
+                } else {
+                    // If dimensions haven't changed, just clear to ensure a fresh state for drawing
+                    // This is important if the canvas was previously drawn on but not signed, or if it's being re-initialized
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
 
                 // If a signature exists in our storage, redraw it
                 if (currentSignatureBase64) {
@@ -1080,10 +1101,14 @@
             function cargarEvidencia(event) {
                 const files = event.target.files;
                 const container = document.getElementById("evidenciasContainer");
+                const notificationMessageBox = document.getElementById("notificationMessageBox");
+                notificationMessageBox.style.display = 'none'; // Hide previous messages
+
                 container.innerHTML = ""; // Clear previous evidences
                 
                 if (files.length > 3) {
-                    alert("Solo puedes cargar hasta 3 imágenes.");
+                    notificationMessageBox.querySelector('p').innerHTML = '<i class="fas fa-exclamation-triangle mr-2"></i>Solo puedes cargar hasta 3 imágenes.';
+                    notificationMessageBox.style.display = 'block';
                     event.target.value = ''; // Clear file input
                     return;
                 }
@@ -1133,16 +1158,28 @@
             canvasIds.forEach(id => {
                 const canvas = document.getElementById(id);
                 if (canvas) {
-                    limpiarCanvas(id); // Explicitly clear and reset signed state
-                    inicializarCanvas(id); // Then set up listeners and properties
+                    inicializarCanvas(id); // Initialize with current state
                 }
             });
             mostrarCamposTestigo(); // To handle the initial state of the select
 
-            // Add resize listener to re-initialize canvases when window is resized
-            window.addEventListener('resize', () => {
+            // Add a slight delay for re-initialization on resize to allow layout to settle
+            let resizeTimeout;
+            window.removeEventListener('resize', handleResize); // Remove old listener if any
+            function handleResize() {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(() => {
+                    canvasIds.forEach(id => inicializarCanvas(id));
+                }, 100); // 100ms delay
+            }
+            window.addEventListener('resize', handleResize);
+
+            // Also call initialize immediately after the tab content is made visible
+            // This is handled by showTab calling initializeNotificationsTab()
+            // but a small delay here might also help for initial render on tab switch
+            setTimeout(() => {
                 canvasIds.forEach(id => inicializarCanvas(id));
-            });
+            }, 50); // Small delay for initial render
         }
         // End of Notifications Tab (Reporte de Trabajo) Logic
 
