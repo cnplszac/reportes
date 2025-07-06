@@ -901,6 +901,13 @@
     </div>
 
     <script>
+        // Objeto para almacenar los datos de la firma en Base64
+        const signatureData = {
+            firmaSupervisor: null,
+            firmaEmpleado: null,
+            firmaTestigo: null
+        };
+
         // --- Tab Logic ---
         function showTab(tabId) {
             console.log(`showTab called with tabId: ${tabId}`); // Debugging
@@ -962,42 +969,38 @@
                 }
                 const ctx = canvas.getContext("2d");
                 let dibujando = false;
-                // Retrieve 'firmado' state from dataset, default to false if not set
-                let firmado = canvas.dataset.signed === 'true'; 
-
-                // Store current image data if already signed
-                let imageData = null;
-                if (firmado) {
-                    // Create a temporary canvas to get the current image data before resizing
-                    const tempCanvas = document.createElement('canvas');
-                    const tempCtx = tempCanvas.getContext('2d');
-                    tempCanvas.width = canvas.width;
-                    tempCanvas.height = canvas.height;
-                    tempCtx.drawImage(canvas, 0, 0); // Draw current canvas content to temp
-                    imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
-                }
-
+                
+                // Get current signature data from our storage object
+                const currentSignatureBase64 = signatureData[id];
+                
                 // Set canvas dimensions dynamically to be responsive
-                const aspectRatio = 1.25; // Adjusted aspect ratio to make it twice as tall
-                canvas.width = canvas.offsetWidth; // Set internal drawing buffer width to actual rendered width
-                canvas.height = canvas.width / aspectRatio; // Maintain aspect ratio
+                const aspectRatio = 1.25; 
+                canvas.width = canvas.offsetWidth; 
+                canvas.height = canvas.width / aspectRatio; 
 
-                // Clear canvas only if not signed, or redraw image data if signed
-                if (!firmado) {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                } else if (imageData) {
-                    // Redraw the saved image data onto the resized canvas
-                    // Scale the image data to fit the new canvas size
-                    ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear before redrawing scaled
-                    // Use drawImage from the temporary canvas to scale the content
-                    const tempCanvasToDraw = document.createElement('canvas');
-                    const tempCtxToDraw = tempCanvasToDraw.getContext('2d');
-                    tempCanvasToDraw.width = imageData.width;
-                    tempCtxToDraw.height = imageData.height;
-                    tempCtxToDraw.putImageData(imageData, 0, 0);
-                    ctx.drawImage(tempCanvasToDraw, 0, 0, canvas.width, canvas.height);
+                // Clear the canvas before drawing anything
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // If a signature exists in our storage, redraw it
+                if (currentSignatureBase64) {
+                    const img = new Image();
+                    img.onload = () => {
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    };
+                    img.src = currentSignatureBase64;
+                    canvas.dataset.signed = 'true'; // Ensure signed status is maintained
+                    // Show clear button if there's a signature
+                    const clearButton = document.getElementById(`limpiar${id.charAt(0).toUpperCase() + id.slice(1)}`);
+                    if (clearButton) {
+                        clearButton.classList.remove("hidden");
+                    }
+                } else {
+                    canvas.dataset.signed = 'false'; // No signature, ensure not signed
+                    const clearButton = document.getElementById(`limpiar${id.charAt(0).toUpperCase() + id.slice(1)}`);
+                    if (clearButton) {
+                        clearButton.classList.add("hidden");
+                    }
                 }
-
 
                 // Set stroke properties for the signature
                 ctx.lineWidth = 2;
@@ -1032,6 +1035,7 @@
                 function finalizarDibujo() {
                     dibujando = false;
                     canvas.dataset.signed = 'true'; // Set dataset attribute to indicate signed
+                    signatureData[id] = canvas.toDataURL("image/png"); // Store base64 data
                     // Ensure the clear button is shown after signing
                     const clearButton = document.getElementById(`limpiar${id.charAt(0).toUpperCase() + id.slice(1)}`);
                     if (clearButton) {
@@ -1065,6 +1069,7 @@
                 const ctx = canvas.getContext("2d");
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 canvas.dataset.signed = 'false'; // Reset dataset attribute
+                signatureData[id] = null; // Clear stored data
                 const clearButton = document.getElementById(`limpiar${id.charAt(0).toUpperCase() + id.slice(1)}`);
                 if (clearButton) {
                     clearButton.classList.add("hidden");
