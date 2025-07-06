@@ -990,22 +990,18 @@
                     targetHeight = canvas.offsetWidth / aspectRatio;
                 }
                 
-                // Only update canvas dimensions if they have changed significantly
-                // This prevents unnecessary clearing and redrawing if size is stable
-                if (canvas.width !== targetWidth || canvas.height !== targetHeight) {
-                    canvas.width = targetWidth;
-                    canvas.height = targetHeight;
-                    ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear only if resized
-                } else {
-                    // If dimensions haven't changed, just clear to ensure a fresh state for drawing
-                    // This is important if the canvas was previously drawn on but not signed, or if it's being re-initialized
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                }
+                // Always update canvas drawing buffer dimensions to match its display size
+                canvas.width = targetWidth;
+                canvas.height = targetHeight;
+                
+                // Always clear the canvas before drawing to ensure a fresh state
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
 
                 // If a signature exists in our storage, redraw it
                 if (currentSignatureBase64) {
                     const img = new Image();
                     img.onload = () => {
+                        // Ensure the image is drawn only after it's loaded
                         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                     };
                     img.src = currentSignatureBase64;
@@ -1163,16 +1159,21 @@
             });
             mostrarCamposTestigo(); // To handle the initial state of the select
 
-            // Add a slight delay for re-initialization on resize to allow layout to settle
-            let resizeTimeout;
-            window.removeEventListener('resize', handleResize); // Remove old listener if any
-            function handleResize() {
-                clearTimeout(resizeTimeout);
-                resizeTimeout = setTimeout(() => {
+            // Add a slight delay for re-initialization on resize and scroll to allow layout to settle
+            let layoutChangeTimeout;
+            const debouncedInitializeCanvases = () => {
+                clearTimeout(layoutChangeTimeout);
+                layoutChangeTimeout = setTimeout(() => {
                     canvasIds.forEach(id => inicializarCanvas(id));
-                }, 100); // 100ms delay
-            }
-            window.addEventListener('resize', handleResize);
+                }, 150); // Slightly increased debounce for more stability
+            };
+
+            window.removeEventListener('resize', debouncedInitializeCanvases); 
+            window.addEventListener('resize', debouncedInitializeCanvases);
+
+            // Add scroll listener for mobile devices where UI changes can affect layout
+            document.removeEventListener('scroll', debouncedInitializeCanvases);
+            document.addEventListener('scroll', debouncedInitializeCanvases, { passive: true }); // Use passive for better scroll performance
 
             // Also call initialize immediately after the tab content is made visible
             // This is handled by showTab calling initializeNotificationsTab()
