@@ -942,6 +942,205 @@
             // No need to call initializePopcornGamesTab here anymore, as it's a separate page
         }
 
+        // --- Logic for Notifications Tab (NEW - Reporte de Trabajo) ---
+        // Moved this function outside the IIFE to make it globally accessible
+        function initializeNotificationsTab() {
+            console.log("Initializing Notifications Tab (Reporte de Trabajo)");
+
+            // Helper function to adjust textarea height
+            function ajustarAltura(textarea) {
+                textarea.style.height = "auto";
+                textarea.style.height = (textarea.scrollHeight) + "px";
+            }
+
+            // Initialize signature canvases
+            function inicializarCanvas(id) {
+                const canvas = document.getElementById(id);
+                if (!canvas) {
+                    console.error(`Canvas with ID '${id}' not found.`);
+                    return;
+                }
+                const ctx = canvas.getContext("2d");
+                let dibujando = false;
+                // Retrieve 'firmado' state from dataset, default to false if not set
+                let firmado = canvas.dataset.signed === 'true'; 
+
+                // Store current image data if already signed
+                let imageData = null;
+                if (firmado) {
+                    // Create a temporary canvas to get the current image data before resizing
+                    const tempCanvas = document.createElement('canvas');
+                    const tempCtx = tempCanvas.getContext('2d');
+                    tempCanvas.width = canvas.width;
+                    tempCanvas.height = canvas.height;
+                    tempCtx.drawImage(canvas, 0, 0); // Draw current canvas content to temp
+                    imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+                }
+
+                // Set canvas dimensions dynamically to be responsive
+                const aspectRatio = 1.25; // Adjusted aspect ratio to make it twice as tall
+                canvas.width = canvas.offsetWidth; // Set internal drawing buffer width to actual rendered width
+                canvas.height = canvas.width / aspectRatio; // Maintain aspect ratio
+
+                // Clear canvas only if not signed, or redraw image data if signed
+                if (!firmado) {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                } else if (imageData) {
+                    // Redraw the saved image data onto the resized canvas
+                    // Scale the image data to fit the new canvas size
+                    ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear before redrawing scaled
+                    // Use drawImage from the temporary canvas to scale the content
+                    const tempCanvasToDraw = document.createElement('canvas');
+                    const tempCtxToDraw = tempCanvasToDraw.getContext('2d');
+                    tempCanvasToDraw.width = imageData.width;
+                    tempCtxToDraw.height = imageData.height;
+                    tempCtxToDraw.putImageData(imageData, 0, 0);
+                    ctx.drawImage(tempCanvasToDraw, 0, 0, canvas.width, canvas.height);
+                }
+
+
+                // Set stroke properties for the signature
+                ctx.lineWidth = 2;
+                ctx.lineCap = "round";
+                ctx.strokeStyle = "#334155"; // Dark gray color for consistency
+
+
+                function obtenerCoordenadas(event) {
+                    const rect = canvas.getBoundingClientRect();
+                    return {
+                        x: event.clientX ? event.clientX - rect.left : event.touches[0].clientX - rect.left,
+                        y: event.clientY ? event.clientY - rect.top : event.touches[0].clientY - rect.top
+                    };
+                }
+
+                function iniciarDibujo(event) {
+                    event.preventDefault();
+                    dibujando = true;
+                    const { x, y } = obtenerCoordenadas(event);
+                    ctx.beginPath();
+                    ctx.moveTo(x, y);
+                }
+
+                function dibujar(event) {
+                    if (!dibujando) return;
+                    event.preventDefault();
+                    const { x, y } = obtenerCoordenadas(event);
+                    ctx.lineTo(x, y);
+                    ctx.stroke();
+                }
+
+                function finalizarDibujo() {
+                    dibujando = false;
+                    canvas.dataset.signed = 'true'; // Set dataset attribute to indicate signed
+                    // Ensure the clear button is shown after signing
+                    const clearButton = document.getElementById(`limpiar${id.charAt(0).toUpperCase() + id.slice(1)}`);
+                    if (clearButton) {
+                        clearButton.classList.remove("hidden");
+                    }
+                }
+
+                // Remove existing listeners to prevent duplicates if function is called multiple times
+                canvas.removeEventListener("mousedown", iniciarDibujo);
+                canvas.removeEventListener("mousemove", dibujar);
+                canvas.removeEventListener("mouseup", finalizarDibujo);
+                canvas.removeEventListener("mouseleave", finalizarDibujo);
+                canvas.removeEventListener("touchstart", iniciarDibujo);
+                canvas.removeEventListener("touchmove", dibujar);
+                canvas.removeEventListener("touchend", finalizarDibujo);
+
+                // Add new listeners
+                canvas.addEventListener("mousedown", iniciarDibujo);
+                canvas.addEventListener("mousemove", dibujar);
+                canvas.addEventListener("mouseup", finalizarDibujo);
+                canvas.addEventListener("mouseleave", finalizarDibujo);
+                canvas.addEventListener("touchstart", iniciarDibujo);
+                canvas.addEventListener("touchmove", dibujar);
+                canvas.addEventListener("touchend", finalizarDibujo);
+            }
+
+            // Clear signature canvas
+            function limpiarCanvas(id) {
+                const canvas = document.getElementById(id);
+                if (!canvas) return;
+                const ctx = canvas.getContext("2d");
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                canvas.dataset.signed = 'false'; // Reset dataset attribute
+                const clearButton = document.getElementById(`limpiar${id.charAt(0).toUpperCase() + id.slice(1)}`);
+                if (clearButton) {
+                    clearButton.classList.add("hidden");
+                }
+            }
+
+            // Handle evidence file loading
+            function cargarEvidencia(event) {
+                const files = event.target.files;
+                const container = document.getElementById("evidenciasContainer");
+                container.innerHTML = ""; // Clear previous evidences
+                
+                if (files.length > 3) {
+                    alert("Solo puedes cargar hasta 3 imágenes.");
+                    event.target.value = ''; // Clear file input
+                    return;
+                }
+                
+                Array.from(files).forEach((file) => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = document.createElement("img");
+                        img.src = e.target.result;
+                        container.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            // Show/hide witness fields
+            function mostrarCamposTestigo() {
+                const testigoSelect = document.getElementById("testigoSelect");
+                const testigoContainer = document.getElementById("testigoContainer");
+                const firmaTestigoCanvas = document.getElementById("firmaTestigo");
+                const limpiarFirmaTestigoBtn = document.getElementById("limpiarFirmaTestigo");
+
+                if (testigoSelect.value === "si") {
+                    testigoContainer.classList.remove("hidden");
+                    // Ensure canvas is clear and ready for new signature when shown
+                    limpiarCanvas("firmaTestigo"); // Explicitly clear and reset signed state
+                    inicializarCanvas("firmaTestigo"); // Re-initialize event listeners etc.
+                    if (limpiarFirmaTestigoBtn) {
+                        limpiarFirmaTestigoBtn.classList.add("hidden"); // Hide clear button initially for new signature
+                    }
+                } else {
+                    testigoContainer.classList.add("hidden");
+                    limpiarCanvas("firmaTestigo"); // Clear and reset witness canvas when hidden
+                }
+            }
+
+            // Attach event listeners and initial calls for the Notifications tab elements
+            document.getElementById("descripcion").addEventListener('input', function() { ajustarAltura(this); });
+            document.getElementById("evidencia").addEventListener('change', cargarEvidencia);
+            document.getElementById("testigoSelect").addEventListener('change', mostrarCamposTestigo);
+            document.getElementById("limpiarFirmaSupervisor").addEventListener('click', () => limpiarCanvas('firmaSupervisor'));
+            document.getElementById("limpiarFirmaEmpleado").addEventListener('click', () => limpiarCanvas('firmaEmpleado'));
+            document.getElementById("limpiarFirmaTestigo").addEventListener('click', () => limpiarCanvas('firmaTestigo'));
+
+            // Initial calls for all canvases and witness section
+            const canvasIds = ['firmaSupervisor', 'firmaEmpleado', 'firmaTestigo'];
+            canvasIds.forEach(id => {
+                const canvas = document.getElementById(id);
+                if (canvas) {
+                    limpiarCanvas(id); // Explicitly clear and reset signed state
+                    inicializarCanvas(id); // Then set up listeners and properties
+                }
+            });
+            mostrarCamposTestigo(); // To handle the initial state of the select
+
+            // Add resize listener to re-initialize canvases when window is resized
+            window.addEventListener('resize', () => {
+                canvasIds.forEach(id => inicializarCanvas(id));
+            });
+        }
+        // End of Notifications Tab (Reporte de Trabajo) Logic
+
         document.addEventListener('DOMContentLoaded', () => {
             console.log("main-report-page.html script loaded."); // Debugging
 
@@ -1670,288 +1869,90 @@
                 });
             })(); // End of Turno Entrega Activities Tab logic
 
-            // --- Logic for Notifications Tab (NEW - Reporte de Trabajo) ---
-            function initializeNotificationsTab() {
-                console.log("Initializing Notifications Tab (Reporte de Trabajo)");
+            // Function to download PDF - Moved to global scope
+            function descargarPDF() {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                const quienReporta = document.getElementById("quienReporta").value;
+                const nombre = document.getElementById("nombre").value;
+                const fecha = document.getElementById("fecha").value;
+                const descripcion = document.getElementById("descripcion").value;
+                
+                let yPos = 20;
 
-                // Helper function to adjust textarea height
-                function ajustarAltura(textarea) {
-                    textarea.style.height = "auto";
-                    textarea.style.height = (textarea.scrollHeight) + "px";
+                doc.setFontSize(18);
+                doc.text("Reporte de Trabajo", 20, yPos);
+                yPos += 10;
+                
+                doc.setFontSize(12);
+                doc.text(`Quien Reporta: ${quienReporta}`, 20, yPos);
+                yPos += 10;
+                doc.text(`Nombre del Empleado: ${nombre}`, 20, yPos);
+                yPos += 10;
+                doc.text(`Fecha y Hora: ${fecha}`, 20, yPos);
+                yPos += 10;
+                doc.text(`Descripción del Trabajo:`, 20, yPos);
+                yPos += 10;
+                const splitDescription = doc.splitTextToSize(descripcion, 170);
+                doc.text(splitDescription, 20, yPos);
+                yPos += (splitDescription.length * 7) + 10; // Adjust Y position based on description length
+                
+                function agregarFirma(canvasId, title) {
+                    if (yPos > 240) { // Check if new page is needed for signatures
+                        doc.addPage();
+                        yPos = 20;
+                    }
+                    doc.text(`${title}:`, 20, yPos);
+                    const canvas = document.getElementById(canvasId);
+                    // Only add image if canvas has been signed (data-signed is 'true')
+                    if (canvas && canvas.dataset.signed === 'true') { 
+                        const imgData = canvas.toDataURL("image/png");
+                        doc.addImage(imgData, "PNG", 20, yPos + 10, 80, 30); // Image size adjusted
+                        yPos += 45; // Space for signature and next text
+                    } else {
+                        doc.text("No se proporcionó firma.", 20, yPos + 10);
+                        yPos += 20;
+                    }
                 }
-
-                // Initialize signature canvases
-                function inicializarCanvas(id) {
-                    const canvas = document.getElementById(id);
-                    if (!canvas) {
-                        console.error(`Canvas with ID '${id}' not found.`);
-                        return;
+                
+                agregarFirma("firmaSupervisor", "Firma del Jefe Inmediato");
+                agregarFirma("firmaEmpleado", "Firma del Empleado");
+                
+                const testigoSelect = document.getElementById("testigoSelect").value;
+                if (testigoSelect === "si") {
+                    const nombreTestigo = document.getElementById("nombreTestigo").value;
+                    if (yPos > 240) { // Check if new page is needed for witness
+                        doc.addPage();
+                        yPos = 20;
                     }
-                    const ctx = canvas.getContext("2d");
-                    let dibujando = false;
-                    // Retrieve 'firmado' state from dataset, default to false if not set
-                    let firmado = canvas.dataset.signed === 'true'; 
-
-                    // Store current image data if already signed
-                    let imageData = null;
-                    if (firmado) {
-                        // Create a temporary canvas to get the current image data before resizing
-                        const tempCanvas = document.createElement('canvas');
-                        const tempCtx = tempCanvas.getContext('2d');
-                        tempCanvas.width = canvas.width;
-                        tempCanvas.height = canvas.height;
-                        tempCtx.drawImage(canvas, 0, 0); // Draw current canvas content to temp
-                        imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+                    doc.text(`Nombre del Testigo: ${nombreTestigo}`, 20, yPos);
+                    yPos += 10;
+                    agregarFirma("firmaTestigo", "Firma del Testigo");
+                }
+                
+                const evidencias = document.getElementById("evidenciasContainer").getElementsByTagName("img");
+                if (evidencias.length > 0) {
+                    if (yPos > 200) { // Start images on a new page if not enough space
+                        doc.addPage();
+                        yPos = 20;
                     }
-
-                    // Set canvas dimensions dynamically to be responsive
-                    const aspectRatio = 1.25; // Adjusted aspect ratio to make it twice as tall
-                    canvas.width = canvas.offsetWidth; // Set internal drawing buffer width to actual rendered width
-                    canvas.height = canvas.width / aspectRatio; // Maintain aspect ratio
-
-                    // Clear canvas only if not signed, or redraw image data if signed
-                    if (!firmado) {
-                        ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    } else if (imageData) {
-                        // Redraw the saved image data onto the resized canvas
-                        // Scale the image data to fit the new canvas size
-                        ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear before redrawing scaled
-                        // Use drawImage from the temporary canvas to scale the content
-                        const tempCanvasToDraw = document.createElement('canvas');
-                        const tempCtxToDraw = tempCanvasToDraw.getContext('2d');
-                        tempCanvasToDraw.width = imageData.width;
-                        tempCanvasToDraw.height = imageData.height;
-                        tempCtxToDraw.putImageData(imageData, 0, 0);
-                        ctx.drawImage(tempCanvasToDraw, 0, 0, canvas.width, canvas.height);
-                    }
-
-
-                    // Set stroke properties for the signature
-                    ctx.lineWidth = 2;
-                    ctx.lineCap = "round";
-                    ctx.strokeStyle = "#334155"; // Dark gray color for consistency
-
-
-                    function obtenerCoordenadas(event) {
-                        const rect = canvas.getBoundingClientRect();
-                        return {
-                            x: event.clientX ? event.clientX - rect.left : event.touches[0].clientX - rect.left,
-                            y: event.clientY ? event.clientY - rect.top : event.touches[0].clientY - rect.top
-                        };
-                    }
-
-                    function iniciarDibujo(event) {
-                        if (canvas.dataset.signed === 'true') return; // Prevent drawing if already signed
-                        event.preventDefault();
-                        dibujando = true;
-                        const { x, y } = obtenerCoordenadas(event);
-                        ctx.beginPath();
-                        ctx.moveTo(x, y);
-                    }
-
-                    function dibujar(event) {
-                        if (!dibujando || canvas.dataset.signed === 'true') return; // Prevent drawing if not drawing or already signed
-                        event.preventDefault();
-                        const { x, y } = obtenerCoordenadas(event);
-                        ctx.lineTo(x, y);
-                        ctx.stroke();
-                    }
-
-                    function finalizarDibujo() {
-                        dibujando = false;
-                        canvas.dataset.signed = 'true'; // Set dataset attribute to indicate signed
-                        // Ensure the clear button is shown after signing
-                        const clearButton = document.getElementById(`limpiar${id.charAt(0).toUpperCase() + id.slice(1)}`);
-                        if (clearButton) {
-                            clearButton.classList.remove("hidden");
+                    doc.text("Evidencia Fotográfica:", 20, yPos);
+                    yPos += 10;
+                    Array.from(evidencias).forEach((img, index) => {
+                        const imgData = img.src;
+                        if (yPos + 55 > doc.internal.pageSize.height) { // Check if current image fits
+                            doc.addPage();
+                            yPos = 20; // Reset Y for new page
                         }
-                    }
-
-                    // Remove existing listeners to prevent duplicates if function is called multiple times
-                    canvas.removeEventListener("mousedown", iniciarDibujo);
-                    canvas.removeEventListener("mousemove", dibujar);
-                    canvas.removeEventListener("mouseup", finalizarDibujo);
-                    canvas.removeEventListener("mouseleave", finalizarDibujo);
-                    canvas.removeEventListener("touchstart", iniciarDibujo);
-                    canvas.removeEventListener("touchmove", dibujar);
-                    canvas.removeEventListener("touchend", finalizarDibujo);
-
-                    // Add new listeners
-                    canvas.addEventListener("mousedown", iniciarDibujo);
-                    canvas.addEventListener("mousemove", dibujar);
-                    canvas.addEventListener("mouseup", finalizarDibujo);
-                    canvas.addEventListener("mouseleave", finalizarDibujo);
-                    canvas.addEventListener("touchstart", iniciarDibujo);
-                    canvas.addEventListener("touchmove", dibujar);
-                    canvas.addEventListener("touchend", finalizarDibujo);
-                }
-
-                // Clear signature canvas
-                function limpiarCanvas(id) {
-                    const canvas = document.getElementById(id);
-                    if (!canvas) return;
-                    const ctx = canvas.getContext("2d");
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    canvas.dataset.signed = 'false'; // Reset dataset attribute
-                    const clearButton = document.getElementById(`limpiar${id.charAt(0).toUpperCase() + id.slice(1)}`);
-                    if (clearButton) {
-                        clearButton.classList.add("hidden");
-                    }
-                    // No need to call inicializarCanvas here, as the resize listener will handle it, or it's ready for new drawing
-                }
-
-                // Handle evidence file loading
-                function cargarEvidencia(event) {
-                    const files = event.target.files;
-                    const container = document.getElementById("evidenciasContainer");
-                    container.innerHTML = ""; // Clear previous evidences
-                    
-                    if (files.length > 3) {
-                        alert("Solo puedes cargar hasta 3 imágenes.");
-                        event.target.value = ''; // Clear file input
-                        return;
-                    }
-                    
-                    Array.from(files).forEach((file) => {
-                        const reader = new FileReader();
-                        reader.onload = function(e) {
-                            const img = document.createElement("img");
-                            img.src = e.target.result;
-                            container.appendChild(img);
-                        };
-                        reader.readAsDataURL(file);
+                        doc.addImage(imgData, "PNG", 20, yPos, 50, 50); // Small size for evidence
+                        yPos += 55; // Space after each image
                     });
                 }
-
-                // Show/hide witness fields
-                function mostrarCamposTestigo() {
-                    const testigoSelect = document.getElementById("testigoSelect");
-                    const testigoContainer = document.getElementById("testigoContainer");
-                    const firmaTestigoCanvas = document.getElementById("firmaTestigo");
-                    const limpiarFirmaTestigoBtn = document.getElementById("limpiarFirmaTestigo");
-
-                    if (testigoSelect.value === "si") {
-                        testigoContainer.classList.remove("hidden");
-                        inicializarCanvas("firmaTestigo"); // Initialize witness canvas when shown
-                        if (limpiarFirmaTestigoBtn) {
-                            limpiarFirmaTestigoBtn.classList.add("hidden"); // Hide clear button initially for new signature
-                        }
-                    } else {
-                        testigoContainer.classList.add("hidden");
-                        limpiarCanvas("firmaTestigo"); // Clear and reset witness canvas when hidden
-                    }
-                }
-
-                // Attach event listeners and initial calls for the Notifications tab elements
-                document.getElementById("descripcion").addEventListener('input', function() { ajustarAltura(this); });
-                document.getElementById("evidencia").addEventListener('change', cargarEvidencia);
-                document.getElementById("testigoSelect").addEventListener('change', mostrarCamposTestigo);
-                document.getElementById("limpiarFirmaSupervisor").addEventListener('click', () => limpiarCanvas('firmaSupervisor'));
-                document.getElementById("limpiarFirmaEmpleado").addEventListener('click', () => limpiarCanvas('firmaEmpleado'));
-                document.getElementById("limpiarFirmaTestigo").addEventListener('click', () => limpiarCanvas('firmaTestigo'));
-
-                // Initial calls for all canvases and witness section
-                const canvasIds = ['firmaSupervisor', 'firmaEmpleado', 'firmaTestigo'];
-                canvasIds.forEach(id => {
-                    const canvas = document.getElementById(id);
-                    if (canvas) {
-                        canvas.dataset.signed = 'false'; // Initialize signed state
-                        inicializarCanvas(id);
-                    }
-                });
-                mostrarCamposTestigo(); // To handle the initial state of the select
-
-                // Add resize listener to re-initialize canvases when window is resized
-                window.addEventListener('resize', () => {
-                    canvasIds.forEach(id => inicializarCanvas(id));
-                });
+                
+                doc.save("reporte_trabajo.pdf");
             }
-            // End of Notifications Tab (Reporte de Trabajo) Logic
         });
-
-        // Function to download PDF - Moved to global scope
-        function descargarPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            
-            const quienReporta = document.getElementById("quienReporta").value;
-            const nombre = document.getElementById("nombre").value;
-            const fecha = document.getElementById("fecha").value;
-            const descripcion = document.getElementById("descripcion").value;
-            
-            let yPos = 20;
-
-            doc.setFontSize(18);
-            doc.text("Reporte de Trabajo", 20, yPos);
-            yPos += 10;
-            
-            doc.setFontSize(12);
-            doc.text(`Quien Reporta: ${quienReporta}`, 20, yPos);
-            yPos += 10;
-            doc.text(`Nombre del Empleado: ${nombre}`, 20, yPos);
-            yPos += 10;
-            doc.text(`Fecha y Hora: ${fecha}`, 20, yPos);
-            yPos += 10;
-            doc.text(`Descripción del Trabajo:`, 20, yPos);
-            yPos += 10;
-            const splitDescription = doc.splitTextToSize(descripcion, 170);
-            doc.text(splitDescription, 20, yPos);
-            yPos += (splitDescription.length * 7) + 10; // Adjust Y position based on description length
-            
-            function agregarFirma(canvasId, title) {
-                if (yPos > 240) { // Check if new page is needed for signatures
-                    doc.addPage();
-                    yPos = 20;
-                }
-                doc.text(`${title}:`, 20, yPos);
-                const canvas = document.getElementById(canvasId);
-                // Only add image if canvas has been signed (data-signed is 'true')
-                if (canvas && canvas.dataset.signed === 'true') { 
-                    const imgData = canvas.toDataURL("image/png");
-                    doc.addImage(imgData, "PNG", 20, yPos + 10, 80, 30); // Image size adjusted
-                    yPos += 45; // Space for signature and next text
-                } else {
-                    doc.text("No se proporcionó firma.", 20, yPos + 10);
-                    yPos += 20;
-                }
-            }
-            
-            agregarFirma("firmaSupervisor", "Firma del Jefe Inmediato");
-            agregarFirma("firmaEmpleado", "Firma del Empleado");
-            
-            const testigoSelect = document.getElementById("testigoSelect").value;
-            if (testigoSelect === "si") {
-                const nombreTestigo = document.getElementById("nombreTestigo").value;
-                if (yPos > 240) { // Check if new page is needed for witness
-                    doc.addPage();
-                    yPos = 20;
-                }
-                doc.text(`Nombre del Testigo: ${nombreTestigo}`, 20, yPos);
-                yPos += 10;
-                agregarFirma("firmaTestigo", "Firma del Testigo");
-            }
-            
-            const evidencias = document.getElementById("evidenciasContainer").getElementsByTagName("img");
-            if (evidencias.length > 0) {
-                if (yPos > 200) { // Start images on a new page if not enough space
-                    doc.addPage();
-                    yPos = 20;
-                }
-                doc.text("Evidencia Fotográfica:", 20, yPos);
-                yPos += 10;
-                Array.from(evidencias).forEach((img, index) => {
-                    const imgData = img.src;
-                    if (yPos + 55 > doc.internal.pageSize.height) { // Check if current image fits
-                        doc.addPage();
-                        yPos = 20; // Reset Y for new page
-                    }
-                    doc.addImage(imgData, "PNG", 20, yPos, 50, 50); // Small size for evidence
-                    yPos += 55; // Space after each image
-                });
-            }
-            
-            doc.save("reporte_trabajo.pdf");
-        }
     </script>
 </body>
 </html>
